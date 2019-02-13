@@ -1,6 +1,6 @@
-# Build::Hopen - A build generator with first-class edges and explicit dependencies
+# Data::Hopen - A build generator with first-class edges and explicit dependencies
 
-[![Appveyor Badge](https://ci.appveyor.com/api/projects/status/github/cxw42/hopen?svg=true)](https://ci.appveyor.com/project/cxw42/hopen)
+[![Appveyor Badge](https://ci.appveyor.com/api/projects/status/github/hopenbuild/data-hopen?svg=true)](https://ci.appveyor.com/project/cxw42/data-hopen)
 
 
 
@@ -14,7 +14,7 @@ build scripts (specifically, Perl 5.14+)
 - Context-sensitivity.  Your users can tweak their own builds for their own
 platforms without affecting your project.
 
-See [Build::Hopen::Conventions](https://metacpan.org/pod/release/CXW/Build-Hopen-0.000006-TRIAL/lib/Build/Hopen/Conventions.pod) for details of the input format.
+See [Data::Hopen::Conventions](https://metacpan.org/pod/release/CXW/Build-Hopen-0.000006-TRIAL/lib/Build/Hopen/Conventions.pod) for details of the input format.
 
 Why Perl?  Because (1) you probably already have it installed, and
 (2) it is the original write-once, run-everywhere language!
@@ -23,7 +23,7 @@ Why Perl?  Because (1) you probably already have it installed, and
 
 Easiest: install `cpanminus` if you don't have it - see
 [https://metacpan.org/pod/App::cpanminus#INSTALLATION](https://metacpan.org/pod/App::cpanminus#INSTALLATION).  Then run
-`cpanm Build::Hopen`.
+`cpanm Data::Hopen`.
 
 Manually: clone or untar into a working directory.  Then, in that directory,
 
@@ -44,7 +44,7 @@ no one else has reported the problem yet.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Build::Hopen
+    perldoc Data::Hopen
     perldoc hopen
 
 You can also look for information at:
@@ -55,15 +55,15 @@ You can also look for information at:
 
 - MetaCPAN
 
-    [https://metacpan.org/release/Build-Hopen](https://metacpan.org/release/Build-Hopen)
+    [https://metacpan.org/release/Data-Hopen](https://metacpan.org/release/Data-Hopen)
 
 - AnnoCPAN: Annotated CPAN documentation
 
-    [http://annocpan.org/dist/Build-Hopen](http://annocpan.org/dist/Build-Hopen)
+    [http://annocpan.org/dist/Data-Hopen](http://annocpan.org/dist/Data-Hopen)
 
 - CPAN Ratings
 
-    [https://cpanratings.perl.org/d/Build-Hopen](https://cpanratings.perl.org/d/Build-Hopen)
+    [https://cpanratings.perl.org/d/Data-Hopen](https://cpanratings.perl.org/d/Data-Hopen)
 
 # INSPIRED BY
 

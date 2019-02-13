@@ -1,5 +1,5 @@
 NAME
-    Build::Hopen - A build generator with first-class edges and explicit
+    Data::Hopen - A build generator with first-class edges and explicit
     dependencies
 
     hopen is a cross-platform software build generator.  It makes files you
@@ -15,7 +15,7 @@ NAME
     *   Context-sensitivity.  Your users can tweak their own builds for their
         own platforms without affecting your project.
 
-    See Build::Hopen::Conventions for details of the input format.
+    See Data::Hopen::Conventions for details of the input format.
 
     Why Perl?  Because (1) you probably already have it installed, and (2) it
     is the original write-once, run-everywhere language!
@@ -23,7 +23,7 @@ NAME
 INSTALLATION
     Easiest: install "cpanminus" if you don't have it - see
     <https://metacpan.org/pod/App::cpanminus#INSTALLATION>.  Then run "cpanm
-    Build::Hopen".
+    Data::Hopen".
 
     Manually: clone or untar into a working directory.  Then, in that
     directory,
@@ -44,7 +44,7 @@ INSTALLATION
 SUPPORT
     You can find documentation for this module with the perldoc command.
 
-        perldoc Build::Hopen
+        perldoc Data::Hopen
         perldoc hopen
 
     You can also look for information at:
@@ -55,15 +55,15 @@ SUPPORT
 
     *   MetaCPAN
 
-        <https://metacpan.org/release/Build-Hopen>
+        <https://metacpan.org/release/Data-Hopen>
 
     *   AnnoCPAN: Annotated CPAN documentation
 
-        <http://annocpan.org/dist/Build-Hopen>
+        <http://annocpan.org/dist/Data-Hopen>
 
     *   CPAN Ratings
 
-        <https://cpanratings.perl.org/d/Build-Hopen>
+        <https://cpanratings.perl.org/d/Data-Hopen>
 
 INSPIRED BY
     *   Luke <https://github.com/gvvaughan/luke>

@@ -5,7 +5,7 @@
 t/.*\.out$
 lua$
 TEMPLATE
-Build-Hopen-*
+Data-Hopen-*
 TODO
 \brunhopen$
 \.stackdump$

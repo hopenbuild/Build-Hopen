@@ -1,5 +1,5 @@
 #!perl
-# Makefile.PL for Build::Hopen
+# Makefile.PL for Data::Hopen
 use 5.014;
 use strict;
 use warnings;
@@ -7,7 +7,7 @@ use Config;
 use ExtUtils::MakeMaker;
 use File::Spec;
 
-my $VERSION_FROM = File::Spec->catfile(qw(lib Build Hopen.pm));
+my $VERSION_FROM = File::Spec->catfile(qw(lib Data Hopen.pm));
 my $IS_TRIAL = check_trial();
 
 # Check if this is a TRIAL version {{{1
@@ -102,11 +102,11 @@ authortest:
 testhere:   # Run the tests from lib rather than blib
 \tprove -lj4
 
-README.md: @{[$VERSION_FROM]} Makefile.PL
-\t"$secure_perl_path" "$make_readme_md" -i "\$<" -o "\$@" -f md
+README.md: @{[$VERSION_FROM]} Makefile.PL $make_readme_md
+\t"$secure_perl_path" "$make_readme_md" -i "\$<" -o "\$@" -f md --appveyor cxw42/data-hopen --avbadge hopenbuild/data-hopen
 
-README: @{[$VERSION_FROM]} Makefile.PL
-\t"$secure_perl_path" "$make_readme_md" -i "\$<" -o "\$@" -f text
+README: @{[$VERSION_FROM]} Makefile.PL $make_readme_md
+\t"$secure_perl_path" "$make_readme_md" -i "\$<" -o "\$@" -f text --appveyor hopenbuild/Data-Hopen --avbadge hopenbuild/data-hopen
 
 all :: README.md README
 dist :: README.md README
@@ -137,7 +137,7 @@ EOT
 
 # Main options for EUMM
 my %opts = (
-    NAME             => 'Build::Hopen',
+    NAME             => 'Data::Hopen',
     AUTHOR           => q{Christopher White <cxwembedded@gmail.com>},
     VERSION_FROM     => $VERSION_FROM,
     ABSTRACT_FROM    => $VERSION_FROM,
@@ -261,10 +261,13 @@ my %opts = (
         'meta-spec' => { version => 2 },
 
         resources => {
+            bugtracker => {
+                web  => 'https://github.com/hopenbuild/Data-Hopen/issues',
+            },
             repository => {
                 type => 'git',
-                url  => 'https://github.com/cxw42/hopen.git',
-                web  => 'https://github.com/cxw42/hopen',
+                url  => 'https://github.com/hopenbuild/Data-Hopen.git',
+                web  => 'https://github.com/hopenbuild/Data-Hopen',
             },
         },
 
@@ -282,7 +285,7 @@ my %opts = (
     }, #META_MERGE
 
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean => { FILES => 'Build-Hopen-*' },
+    clean => { FILES => 'Data-Hopen-*' },
 ); # %opts
 
 $opts{META_MERGE}->{release_status} = 'testing' if $IS_TRIAL;
