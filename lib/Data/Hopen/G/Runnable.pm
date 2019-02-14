@@ -1,14 +1,13 @@
 # Data::Hopen::G::Runnable - parent class for anything runnable in a hopen graph
 package Data::Hopen::G::Runnable;
 use Data::Hopen::Base;
+
+our $VERSION = '0.000010';
+
 use Data::Hopen;
-
-our $VERSION = '0.000009'; # TRIAL
-
 use Data::Hopen::Scope::Hash;
 use Data::Hopen::Util::Data qw(forward_opts);
 use Data::Hopen::Util::NameSet;
-use Data::Hopen::Arrrgs;
 use Hash::Merge;
 
 # Docs {{{1
@@ -95,7 +94,7 @@ scope.
 =cut
 
 sub run {
-    my ($self, %args) = parameters('self', [qw(; context phase generator nocontext)], @_);
+    my ($self, %args) = getparameters('self', [qw(; context phase generator nocontext)], @_);
     my $context_scope = $args{context};     # which may be undef - that's OK
     croak "Can't combine -context and -nocontext" if $args{context} && $args{nocontext};
 
@@ -123,7 +122,7 @@ context, and must return a new hashref.
 =cut
 
 sub _run {
-    my ($self, %args) = parameters('self', [qw(; phase generator)], @_);
+    my ($self, %args) = getparameters('self', [qw(; phase generator)], @_);
     ...
 }
 
@@ -142,7 +141,7 @@ Other valid options include L<-levels|Data::Hopen::Scope/$levels>.
 =cut
 
 sub passthrough {
-    my ($self, %args) = parameters('self', ['*'], @_);
+    my ($self, %args) = getparameters('self', ['*'], @_);
     my $outer_scope = $args{context};     # which may be undef - that's OK
     croak "Can't combine -context and -nocontext" if $args{context} && $args{nocontext};
 

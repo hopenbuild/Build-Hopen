@@ -1,13 +1,11 @@
 bin/hopen
 Changes
 lib/Data/Hopen.pm
-lib/Data/Hopen/Arrrgs.pm
 lib/Data/Hopen/Base.pm
 lib/Data/Hopen/G.pod
 lib/Data/Hopen/G/CollectOp.pm
 lib/Data/Hopen/G/DAG.pm
 lib/Data/Hopen/G/Entity.pm
-lib/Data/Hopen/G/FilesOp.pm
 lib/Data/Hopen/G/Goal.pm
 lib/Data/Hopen/G/GraphBuilder.pm
 lib/Data/Hopen/G/Link.pm
@@ -19,8 +17,6 @@ lib/Data/Hopen/Scope/Environment.pm
 lib/Data/Hopen/Scope/Hash.pm
 lib/Data/Hopen/Scope/Inputs.pm
 lib/Data/Hopen/Scope/Overrides.pm
-lib/Data/Hopen/Tool.pm
-lib/Data/Hopen/Toolchain.pm
 lib/Data/Hopen/Util/Data.pm
 lib/Data/Hopen/Util/Filename.pm
 lib/Data/Hopen/Util/NameSet.pm

@@ -3,7 +3,7 @@ package Data::Hopen::Util::Data;
 use Data::Hopen;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000009'; # TRIAL
+our $VERSION = '0.000010';
 
 use parent 'Exporter';
 our (@EXPORT, @EXPORT_OK, %EXPORT_TAGS);
@@ -137,7 +137,7 @@ If truthy, lower-case the key names in the output
 =item '-'
 
 If present, add C<-> to the beginning of each name in the output.
-This is useful with L<Data::Hopen::Arrrgs>.
+This is useful with L<Getargs::Mixed>.
 
 =back
 

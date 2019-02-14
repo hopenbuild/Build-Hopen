@@ -1,14 +1,13 @@
 # Data::Hopen::G::Goal - A named build goal
 package Data::Hopen::G::Goal;
-use Data::Hopen;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000009'; # TRIAL
+our $VERSION = '0.000010';
 
 use parent 'Data::Hopen::G::Op';
 #use Class::Tiny qw(_passthrough);
 
-use Data::Hopen::Arrrgs;
+use Data::Hopen;
 use Data::Hopen::Util::Data qw(forward_opts);
 
 # Docs {{{1
@@ -35,7 +34,7 @@ Wraps a L<Data::Hopen::G::CollectOp>'s run function.
 # }}}1
 
 sub _run {
-    my ($self, %args) = parameters('self', [qw(; phase generator)], @_);
+    my ($self, %args) = getparameters('self', [qw(; phase generator)], @_);
     hlog { Goal => $self->name };
     return $self->passthrough(-nocontext=>1, -levels => 'local',
             forward_opts(\%args, {'-'=>1}, qw[phase generator]));

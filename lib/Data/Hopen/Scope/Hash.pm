@@ -2,15 +2,15 @@
 package Data::Hopen::Scope::Hash;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000009'; # TRIAL
+our $VERSION = '0.000010';
 
 use parent 'Data::Hopen::Scope';
 use Class::Tiny {
     _content => sub { +{} },    # Our storage
 };
 
+use Data::Hopen qw(getparameters);
 #use Data::Hopen::Util::Data qw(clone);
-use Data::Hopen::Arrrgs;
 use Set::Scalar;
 #use Sub::ScopeFinalizer qw(scope_finalizer);
 
@@ -133,7 +133,7 @@ No return value.
 =cut
 
 sub _names_here {
-    my ($self, %args) = parameters('self', [qw(retval ; set)], @_);
+    my ($self, %args) = getparameters('self', [qw(retval ; set)], @_);
     _set0 $args{set} or croak 'I only support set 0';
     $args{retval}->insert(keys %{$self->_content});
 } #_names_here()
@@ -149,7 +149,7 @@ Returns the value, or C<undef> if not found.
 =cut
 
 sub _find_here {
-    my ($self, %args) = parameters('self', [qw(name ; set)], @_);
+    my ($self, %args) = getparameters('self', [qw(name ; set)], @_);
     _set0 $args{set} or croak 'I only support set 0';
 
     my $val = $self->_content->{$args{name}};

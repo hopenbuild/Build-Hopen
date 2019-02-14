@@ -3,7 +3,7 @@ package Data::Hopen::Scope;
 use Data::Hopen::Base;
 use Exporter 'import';
 
-our $VERSION = '0.000009'; # TRIAL
+our $VERSION = '0.000010';
 
 # Class definition
 use Class::Tiny {
@@ -24,8 +24,8 @@ sub FIRST_ONLY { $_first_only }
 use constant _LOCAL => 'local';
 
 # What we use
+use Data::Hopen qw(getparameters);
 use Config;
-use Data::Hopen::Arrrgs;
 use POSIX ();
 use Data::Hopen::Util::Data qw(clone forward_opts);
 use Set::Scalar;
@@ -186,7 +186,7 @@ Dies if given a falsy name, notably, C<'0'>.
 =cut
 
 sub find {
-    my ($self, %args) = parameters('self', [qw(name ; set levels)], @_);
+    my ($self, %args) = getparameters('self', [qw(name ; set levels)], @_);
     croak 'Need a name' unless $args{name};
         # Therefore, '0' is not a valid name
     my $levels = $args{levels};
@@ -217,7 +217,7 @@ TODO?  Support a C<$set> parameter?
 =cut
 
 sub names {
-    my ($self, %args) = parameters('self', [qw(; levels)], @_);
+    my ($self, %args) = getparameters('self', [qw(; levels)], @_);
     my $retval = Set::Scalar->new;
     $self->_fill_names($retval, $args{levels});
     return $retval;
@@ -226,7 +226,7 @@ sub names {
 # Implementation of names()
 sub _fill_names {
     #say Dumper(\@_);
-    my ($self, %args) = parameters('self', [qw(retval levels)], @_);
+    my ($self, %args) = getparameters('self', [qw(retval levels)], @_);
 
     $self->_names_here($args{retval});    # Insert this scope's names
 
@@ -252,7 +252,7 @@ TODO?  Support a C<$set> parameter?
 =cut
 
 sub as_hashref {
-    my ($self, %args) = parameters('self', [qw(; levels deep)], @_);
+    my ($self, %args) = getparameters('self', [qw(; levels deep)], @_);
     my $hrRetval = {};
     $self->_fill_hashref($hrRetval, $args{deep}, $args{levels});
     return $hrRetval;
@@ -261,7 +261,7 @@ sub as_hashref {
 # Implementation of as_hashref.  Mutates the provided $hrRetval.
 # TODO move this to subclasses.
 sub _fill_hashref {
-    my ($self, %args) = parameters('self', [qw(retval levels deep)], @_);
+    my ($self, %args) = getparameters('self', [qw(retval levels deep)], @_);
     my $hrRetval = $args{retval};
 
     # Innermost wins, so copy ours first.
@@ -288,7 +288,7 @@ C<$new_outer> may be C<undef> or a valid C<Scope>.
 =cut
 
 sub outerize {
-    my ($self, %args) = parameters('self', [qw(outer)], @_);
+    my ($self, %args) = getparameters('self', [qw(outer)], @_);
 
     croak 'Need a Scope' unless
         (!defined($args{outer})) or

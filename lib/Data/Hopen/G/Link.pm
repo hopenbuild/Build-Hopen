@@ -1,17 +1,16 @@
 # Data::Hopen::G::Link - base class for hopen edges
 package Data::Hopen::G::Link;
-use Data::Hopen qw(:default UNSPECIFIED);
 use Data::Hopen::Base;
 
-our $VERSION = '0.000009'; # TRIAL
+our $VERSION = '0.000010';
 
 use parent 'Data::Hopen::G::Runnable';
 use Class::Tiny {
     greedy => 0
 };
 
+use Data::Hopen qw(:default UNSPECIFIED);
 use Data::Hopen::Util::Data qw(clone);
-use Data::Hopen::Arrrgs;
 
 =head1 NAME
 
@@ -36,7 +35,7 @@ The output is C<{}> if no inputs are provided.
 =cut
 
 sub _run {
-    my ($self, %args) = parameters('self', [qw(; phase generator)], @_);
+    my ($self, %args) = getparameters('self', [qw(; phase generator)], @_);
     return $self->passthrough(-nocontext => 1);
 } #run()
 

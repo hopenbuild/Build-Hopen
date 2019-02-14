@@ -1,17 +1,16 @@
 # Data::Hopen::G::CollectOp - pull values from scope(s)
 package Data::Hopen::G::CollectOp;
-use Data::Hopen qw(:default UNSPECIFIED);
 use Data::Hopen::Base;
 
-our $VERSION = '0.000009'; # TRIAL
+our $VERSION = '0.000010';
 
 use parent 'Data::Hopen::G::Op';
 use Class::Tiny {
     levels => 'local',
 };
 
+use Data::Hopen qw(:default UNSPECIFIED);
 use Data::Hopen::Util::Data qw(clone forward_opts);
-use Data::Hopen::Arrrgs;
 use Storable ();
 
 # Docs {{{1
@@ -52,7 +51,7 @@ See L<Data::Hopen::G::Runnable/passthrough> for more details.
 =cut
 
 sub _run {
-    my ($self, %args) = parameters('self', [qw(*)], @_);
+    my ($self, %args) = getparameters('self', [qw(*)], @_);
     hlog { Running => __PACKAGE__ , $self->name };
     return $self->passthrough(-nocontext => 1, -levels => $self->levels);
         # -nocontext because Runnable::run() already hooked in the context

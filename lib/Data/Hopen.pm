@@ -10,7 +10,7 @@ our (@EXPORT, @EXPORT_OK, %EXPORT_TAGS);
 BEGIN {
     # TODO move more of these to a separate utility package?
     # Probably keep hnew, hlog, $VERBOSE, and $QUIET here.
-    @EXPORT = qw(hnew hlog);
+    @EXPORT = qw(hnew hlog getparameters);
     @EXPORT_OK = qw(loadfrom $VERBOSE $QUIET UNSPECIFIED NOTHING isMYH MYH);
     %EXPORT_TAGS = (
         default => [@EXPORT],
@@ -19,9 +19,10 @@ BEGIN {
 }
 
 use Data::Hopen::Util::NameSet;
+use Getargs::Mixed;
 use Storable ();
 
-our $VERSION = '0.000009'; # TRIAL
+our $VERSION = '0.000010';
 
 # Docs {{{1
 
@@ -204,6 +205,20 @@ sub isMYH {
     my $name = @_ ? $_[0] : $_;
     return ($name =~ /\b\Q@{[MYH]}\E$/)
 } #isMYH()
+
+=head2 getparameters
+
+An alias of the C<parameters()> function from L<Getargs::Mixed>, but with
+C<-undef_ok> set.
+
+=cut
+
+my $GM = Getargs::Mixed->new(-undef_ok => true);
+
+sub getparameters {
+    unshift @_, $GM;
+    goto &Getargs::Mixed::parameters;
+} #getparameters()
 
 =head1 CONSTANTS
 

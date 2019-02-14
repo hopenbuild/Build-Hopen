@@ -20,8 +20,8 @@ Classes are (all under C<Data::Hopen::G>):
                     PassthroughOp - no-op concrete operation
                     DAG - the graph
 
-Specific use cases of the graph are not under C<...::G>.  For example,
-tools used in the hopen build system are under L<Data::Hopen::Tool>.
+Specific use cases of the graph are not under C<...::G>, such as
+tools used in the hopen build system (L<App::hopen>).
 
 =head1 ELEMENTS
 

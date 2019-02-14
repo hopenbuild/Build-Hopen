@@ -1,9 +1,8 @@
 # Data::Hopen::G::DAG - hopen build graph
 package Data::Hopen::G::DAG;
 use Data::Hopen::Base;
-use Data::Hopen qw(hlog $QUIET);
 
-our $VERSION = '0.000009'; # TRIAL
+our $VERSION = '0.000010';
 
 use parent 'Data::Hopen::G::Op';
 use Class::Tiny {
@@ -26,12 +25,12 @@ use Class::Tiny {
     # TODO? also support fini to run operations after _graph runs?
 };
 
+use Data::Hopen qw(hlog getparameters $QUIET);
 use Data::Hopen::G::Goal;
 use Data::Hopen::G::Link;
 use Data::Hopen::G::Node;
 use Data::Hopen::G::CollectOp;
 use Data::Hopen::Util::Data qw(forward_opts);
-use Data::Hopen::Arrrgs;
 use Graph;
 use Storable ();
 
@@ -109,7 +108,7 @@ Other options are as L<Data::Hopen::Runnable/run>.
 
 # The implementation of run().  $self->scope has already been linked to the context.
 sub _run {
-    my ($self, %args) = parameters('self', [qw(; phase generator)], @_);
+    my ($self, %args) = getparameters('self', [qw(; phase generator)], @_);
     my $retval = {};
 
     # --- Get the initialization ops ---

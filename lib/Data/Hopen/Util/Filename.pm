@@ -1,9 +1,8 @@
 # Data::Hopen::Util::Filename - functions for manipulating filenames
 package Data::Hopen::Util::Filename;
-use Data::Hopen;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000009'; # TRIAL
+our $VERSION = '0.000010';
 
 use parent 'Exporter';
 our (@EXPORT, @EXPORT_OK, %EXPORT_TAGS);
@@ -18,7 +17,7 @@ BEGIN {
 
 use Class::Method::Modifiers qw(fresh);
 use Config;
-use Data::Hopen::Arrrgs;
+use Data::Hopen;
 
 # Docs {{{1
 
@@ -67,7 +66,7 @@ BEGIN {
                             [qw(lib _a lib_ext .a)])
     {
         fresh $lrFunction->[0] => sub {
-            my (undef, %args) = parameters(__PACKAGE__, [qw(filename; strip)], @_);
+            my (undef, %args) = getparameters(__PACKAGE__, [qw(filename; strip)], @_);
                 # __PACKAGE__ => Permit OO interface
             $args{filename} =~ s/\.[^.]*$// if $args{strip};
             return $args{filename} .

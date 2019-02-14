@@ -3,7 +3,7 @@ package Data::Hopen::G::Entity;
 use Data::Hopen;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000009'; # TRIAL
+our $VERSION = '0.000010';
 
 sub name;
 

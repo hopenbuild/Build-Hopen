@@ -1,13 +1,12 @@
 # Data::Hopen::Scope::Environment - a hopen Scope for %ENV
 package Data::Hopen::Scope::Environment;
 use Data::Hopen::Base;
-use Data::Hopen qw(hlog);
 
-our $VERSION = '0.000009'; # TRIAL
+our $VERSION = '0.000010';
 
 use parent 'Data::Hopen::Scope';
 
-use Data::Hopen::Arrrgs;
+use Data::Hopen qw(hlog getparameters);
 use Set::Scalar;
 
 # Docs {{{1
@@ -50,7 +49,7 @@ failure.
 =cut
 
 sub _find_here {
-    my ($self, %args) = parameters('self', [qw(name ; set)], @_);
+    my ($self, %args) = getparameters('self', [qw(name ; set)], @_);
     _set0 $args{set} or croak 'I only support set 0';
     my $val = $ENV{$args{name}};
     return undef unless defined $val;
@@ -81,7 +80,7 @@ Add the names in C<%ENV> to the given L<Set::Scalar>.
 =cut
 
 sub _names_here {
-    my ($self, %args) = parameters('self', [qw(retval ; set)], @_);
+    my ($self, %args) = getparameters('self', [qw(retval ; set)], @_);
     _set0 $args{set} or croak 'I only support set 0';
     $args{retval}->insert(keys %ENV);
     hlog { __PACKAGE__ . '::_names_here', Dumper $args{retval} };
