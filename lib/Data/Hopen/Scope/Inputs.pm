@@ -3,7 +3,7 @@ package Data::Hopen::Scope::Inputs;
 use Data::Hopen;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000010';
+our $VERSION = '0.000011'; # TRIAL
 
 # TODO if a class
 use parent 'Data::Hopen::Scope';

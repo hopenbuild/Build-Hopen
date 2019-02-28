@@ -3,7 +3,7 @@ package Data::Hopen::TEMPLATE;
 use Data::Hopen;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000010';
+our $VERSION = '0.000011'; # TRIAL
 
 # TODO if using exporter
 use parent 'Exporter';

@@ -72,4 +72,3 @@ for:
 
       # Then, install cpanminus locally so it will be cached.
       - which cpanm || (curl -L https://cpanmin.us | perl - App::cpanminus)
-

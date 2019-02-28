@@ -2,7 +2,7 @@
 package Data::Hopen::Scope::Hash;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000010';
+our $VERSION = '0.000011'; # TRIAL
 
 use parent 'Data::Hopen::Scope';
 use Class::Tiny {

@@ -2,7 +2,7 @@
 package Data::Hopen::G::DAG;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000010';
+our $VERSION = '0.000011'; # TRIAL
 
 use parent 'Data::Hopen::G::Op';
 use Class::Tiny {
