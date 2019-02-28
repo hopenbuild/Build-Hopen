@@ -3,7 +3,7 @@ package Data::Hopen::Scope;
 use Data::Hopen::Base;
 use Exporter 'import';
 
-our $VERSION = '0.000011'; # TRIAL
+our $VERSION = '0.000012';
 
 # Class definition
 use Class::Tiny {

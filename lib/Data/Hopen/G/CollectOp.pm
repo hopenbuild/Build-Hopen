@@ -2,7 +2,7 @@
 package Data::Hopen::G::CollectOp;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000011'; # TRIAL
+our $VERSION = '0.000012';
 
 use parent 'Data::Hopen::G::Op';
 use Class::Tiny {

@@ -8,7 +8,7 @@ package Data::Hopen::Base;
 use parent 'Exporter';
 use Import::Into;
 
-our $VERSION = '0.000011'; # TRIAL
+our $VERSION = '0.000012';
 
 # Pragmas
 use 5.014;
