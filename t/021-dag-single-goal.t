@@ -12,7 +12,7 @@ use Data::Hopen::G::Link;
 $Data::Hopen::VERBOSE = @ARGV;
 
 sub run {
-    my $outermost_scope = Data::Hopen::Scope::Hash->new()->add(foo => 42);
+    my $outermost_scope = Data::Hopen::Scope::Hash->new()->put(foo => 42);
 
     my $dag = hnew DAG => 'dag';
 

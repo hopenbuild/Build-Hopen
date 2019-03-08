@@ -2,7 +2,7 @@
 package Data::Hopen::G::Runnable;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000012';
+our $VERSION = '0.000013'; # TRIAL
 
 use Data::Hopen;
 use Data::Hopen::Scope::Hash;
@@ -76,10 +76,11 @@ values in the C<context>.
 
 If given, the phase that is currently under way in a build-system run.
 
-=item -generator
+=item -visitor
 
-If given, the L<Data::Hopen::Gen> instance in use for the current
-build-system run.
+If given, an instance that supports C<visit_goal()> and C<visit_node()> calls.
+A L<Data::Hopen::G::DAG> instance invokes those calls after processing each
+goal or other node, respectively.
 
 =item -nocontext
 
@@ -94,18 +95,18 @@ scope.
 =cut
 
 sub run {
-    my ($self, %args) = getparameters('self', [qw(; context phase generator nocontext)], @_);
+    my ($self, %args) = getparameters('self', [qw(; context phase visitor nocontext)], @_);
     my $context_scope = $args{context};     # which may be undef - that's OK
     croak "Can't combine -context and -nocontext" if $args{context} && $args{nocontext};
 
     # Link the outer scope to our scope
     my $saver = $args{nocontext} ? undef : $self->scope->outerize($context_scope);
 
-    hlog { ref($self), $self->name, 'input', Dumper($self->scope->as_hashref) } 3;
+    hlog { '->', ref($self), $self->name, 'input', Dumper($self->scope->as_hashref) } 3;
 
-    my $retval = $self->_run(forward_opts(\%args, {'-'=>1}, qw[phase generator]));
+    my $retval = $self->_run(forward_opts(\%args, {'-'=>1}, qw[phase visitor]));
 
-    hlog { ref $self, $self->name, 'output', Dumper($retval) } 3;
+    hlog { '<-', ref $self, $self->name, 'output', Dumper($retval) } 3;
 
     return $retval;
 } #run()
@@ -116,13 +117,13 @@ The internal method that implements L</run>.  Must be implemented by
 subclasses.  When C<_run> is called, C<< $self->scope >> has been hooked
 to the context scope, if any.
 
-Parameters are C<-phase> and C<-generator>.  C<_run> is always called in scalar
+Parameters are C<-phase> and C<-visitor>.  C<_run> is always called in scalar
 context, and must return a new hashref.
 
 =cut
 
 sub _run {
-    my ($self, %args) = getparameters('self', [qw(; phase generator)], @_);
+    my ($self, %args) = getparameters('self', [qw(; phase visitor)], @_);
     ...
 }
 

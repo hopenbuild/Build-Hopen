@@ -2,7 +2,7 @@
 package Data::Hopen::G::CollectOp;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000012';
+our $VERSION = '0.000013'; # TRIAL
 
 use parent 'Data::Hopen::G::Op';
 use Class::Tiny {
@@ -52,7 +52,6 @@ See L<Data::Hopen::G::Runnable/passthrough> for more details.
 
 sub _run {
     my ($self, %args) = getparameters('self', [qw(*)], @_);
-    hlog { Running => __PACKAGE__ , $self->name };
     return $self->passthrough(-nocontext => 1, -levels => $self->levels);
         # -nocontext because Runnable::run() already hooked in the context
 } #run()

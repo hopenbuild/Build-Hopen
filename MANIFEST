@@ -11,7 +11,9 @@ lib/Data/Hopen/G/GraphBuilder.pm
 lib/Data/Hopen/G/Link.pm
 lib/Data/Hopen/G/Node.pm
 lib/Data/Hopen/G/Op.pm
+lib/Data/Hopen/G/OutputOp.pm
 lib/Data/Hopen/G/Runnable.pm
+lib/Data/Hopen/OrderedPredecessorGraph.pm
 lib/Data/Hopen/Scope.pm
 lib/Data/Hopen/Scope/Environment.pm
 lib/Data/Hopen/Scope/Hash.pm
@@ -42,6 +44,10 @@ t/011-scope-env.t
 t/012-scope-nested.t
 t/020-dag.t
 t/021-dag-single-goal.t
+t/022-dag-visitor.t
+t/023-dag-warnings.t
+t/024-dag-merge-node-inputs.t
+t/030-ordered_pred.t
 t/dir200/inner.hopen.pl
 t/dir200/inner/.hopen.pl
 t/dir200/inner/z.hopen.pl

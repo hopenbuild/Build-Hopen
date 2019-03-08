@@ -1,8 +1,9 @@
 # Data::Hopen::Scope::Environment - a hopen Scope for %ENV
+# TODO handle $set == FIRST_ONLY
 package Data::Hopen::Scope::Environment;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000012';
+our $VERSION = '0.000013'; # TRIAL
 
 use parent 'Data::Hopen::Scope';
 
@@ -23,6 +24,8 @@ L<Data::Hopen::Scope>.  It only supports one set of data
 with L<Data::Hopen::Scope::Hash>.
 
 =head1 METHODS
+
+Note: L<Data::Hopen::Scope/merge> is unsupported.
 
 =cut
 
@@ -56,14 +59,14 @@ sub _find_here {
     return ($args{set} eq '*') ? { 0 => $val } : $val;
 } #_find_here()
 
-=head2 add
+=head2 put
 
 Updates the corresponding environment variables, in order, by setting C<$ENV{}>.
 Returns the instance.
 
 =cut
 
-sub add {
+sub put {
     my $self = shift;
     croak "Got an odd number of parameters" if @_%2;
     while(@_) {

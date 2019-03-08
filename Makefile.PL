@@ -182,6 +182,7 @@ my %opts = (
         ## 'Test::Directory' => '0.02',    # for subdirs
         'Test::More' => '0',
         # Test::TempDir::Tiny?  If so, remove Test::Directory dependency?
+        'Test::Warn' => '0.35',     # for metadata
     },
     PREREQ_PM => {
         #'Algorithm::Dependency' => '1.106',
@@ -197,8 +198,6 @@ my %opts = (
             # - Looks like it might be handy.
             # 0.002+ because that has only core dependencies.
 
-        #'Class::Method::Modifiers' => '1.05',  # version nums from Antlers
-        #'Role::Tiny' => '1.000000',
 
         ## 'Class::XPath' => '1.4',
         'Config' => '0',
@@ -250,6 +249,8 @@ my %opts = (
         ## 'Pod::Usage' => '0',
         # 'Probe::Perl' => '0', # For perl interpreter file location or other info.
                                 # Alternative: Padre::Perl
+
+        #'Role::Tiny' => '1.000000',            # version num from Antlers
 
         'Scalar::Util' => '0',
         'Set::Scalar' => '1.27',    # For correct metadata
