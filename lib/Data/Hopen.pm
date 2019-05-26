@@ -24,7 +24,7 @@ use Data::Hopen::Util::NameSet;
 use Getargs::Mixed;
 use Storable ();
 
-our $VERSION = '0.000013'; # TRIAL
+our $VERSION = '0.000013';
 
 # Docs {{{1
 
@@ -97,11 +97,27 @@ is the same as
 
     Data::Hopen::G::DAG->new( name => 'foo' );
 
-If the provided name does not include a double-colon, it is first tried after
-C<Data::Hopen::G::>.  It is then tried in C<Data::Hopen::> and as a
-complete package name.  The first one that succeeds is used.
+The first parameter (C<$class>) is an abbreviated package name.  It is tried
+as the following, in order.  The first one that succeeds is used.
 
-The first parameter must be a part of a class name, and the second parameter
+=over
+
+=item 1.
+
+C<Data::Hopen::G::$class>.  This is tried only if C<$class>
+does not include a double-colon.
+
+=item 2.
+
+C<Data::Hopen::$class>
+
+=item 3.
+
+C<$class>
+
+=back
+
+The second parameter
 must be the name of the new instance.  All other parameters are passed
 unchanged to the relevant constructor.
 
@@ -112,16 +128,22 @@ sub hnew {
     my @stems = ('Data::Hopen::G::', 'Data::Hopen::', '');
     shift @stems if $class =~ /::/;
 
+    my $found_class = false;
+
     foreach my $stem (@stems) {
-        my $instance = eval {
-            eval "require $stem$class";
-            "$stem$class"->new('name', @_)
-                # put 'name' in front of the name parameter.
-        };
+        eval "require $stem$class";
+        next if $@;
+        $found_class = "$stem$class";
+        my $instance = "$found_class"->new('name', @_);
+            # put 'name' in front of the name parameter.
         return $instance if $instance;
     }
 
-    croak "Could not find class for $class";
+    if($found_class) {
+        croak "Could not create instance for $found_class";
+    } else {
+        croak "Could not find class for $class";
+    }
 } #hnew()
 
 =head2 loadfrom
@@ -131,13 +153,14 @@ sub hnew {
     my $fullname = loadfrom($name[, @stems]);
 
 Returns the full name of the loaded package, or falsy on failure.
+If C<@stems> is omitted, no stem is used, i.e., C<$name> is tried as-is.
 
 =cut
 
 sub loadfrom {
     my $class = shift or croak 'Need a class';
 
-    foreach my $stem (@_) {
+    foreach my $stem (@_, '') {
         eval "require $stem$class";
         return "$stem$class" unless $@;
     }
@@ -157,9 +180,14 @@ Each line is prefixed with C<'# '> for the benefit of test runs.
 The list is in C<{}> so that it won't be evaluated if logging is turned off.
 It is a full block, so you can run arbitrary code to decide what to log.
 If the block returns an empty list, hlog will not produce any output.
+However, if the block returns at least one element, hlog will produce at
+least a C<'# '>.
 
 The message will be output only if L</$VERBOSE> is at least the given minimum
 verbosity level (1 by default).
+
+If C<< $VERBOSE > 2 >>, the filename and line from which hlog was called
+will also be printed.
 
 =cut
 
@@ -172,7 +200,12 @@ sub hlog (&;$) {
 
     chomp $log[$#log] if $log[$#log];
     # TODO add an option to number the lines of the output
-    say STDERR (join(' ', @log)) =~ s/^/# /gmr;
+    my $msg = (join(' ', @log)) =~ s/^/# /gmr;
+    if($VERBOSE>2) {
+        my ($package, $filename, $line) = caller;
+        $msg .= " (at $filename:$line)";
+    }
+    say STDERR $msg;
 } #hlog()
 
 =head2 isMYH

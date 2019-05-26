@@ -2,7 +2,7 @@
 package Data::Hopen::G::CollectOp;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000013'; # TRIAL
+our $VERSION = '0.000013';
 
 use parent 'Data::Hopen::G::Op';
 use Class::Tiny {
@@ -17,7 +17,7 @@ use Storable ();
 
 =head1 NAME
 
-Data::Hopen::G::CollectOp - a no-op
+Data::Hopen::G::CollectOp - a passthrough operation
 
 =head1 SYNOPSIS
 

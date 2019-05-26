@@ -173,13 +173,18 @@ my %opts = (
         'Pod::Text' => '0',         # pod2text
     },
     TEST_REQUIRES => {
+        'Capture::Tiny' => '0',
         'Carp' => '0',
         'Exporter' => '0',
         'Import::Into' => '0',
+        'List::AutoNumbered' => '0.000006',
+        'Quote::Code' => '1.0102',
         'rlib' => '0',
         'Scalar::Util' => '0',
-        'Test::Deep' => '0.084',        # for superhashof
+        'Sub::Identify' => '0.14',
+        'Test::Deep' => '0.098',        # for superhashof, Test::Deep::NoTest
         ## 'Test::Directory' => '0.02',    # for subdirs
+        'Test::Fatal' => '0.014',
         'Test::More' => '0',
         # Test::TempDir::Tiny?  If so, remove Test::Directory dependency?
         'Test::Warn' => '0.35',     # for metadata
@@ -188,6 +193,7 @@ my %opts = (
         #'Algorithm::Dependency' => '1.106',
             # - Probably don't need this; we can use Graph::topological_sort().
 
+        #'base' => '0',                  # as used by Hash::Merge
         'Carp' => '0',
 
         'Class::Method::Modifiers' => '2.10',   # most recent code change
@@ -200,6 +206,7 @@ my %opts = (
 
 
         ## 'Class::XPath' => '1.4',
+        #'Clone::Choose' => '0.008',     # as used by Hash::Merge
         'Config' => '0',
         #'Cwd' => '0',
 

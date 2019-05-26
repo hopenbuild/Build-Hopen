@@ -2,7 +2,7 @@
 package Data::Hopen::G::Link;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000013'; # TRIAL
+our $VERSION = '0.000013';
 
 use parent 'Data::Hopen::G::Runnable';
 use Class::Tiny {

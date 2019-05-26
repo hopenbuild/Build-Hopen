@@ -3,7 +3,7 @@ package Data::Hopen::G::OutputOp;
 use Data::Hopen;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000013'; # TRIAL
+our $VERSION = '0.000013';
 
 use parent 'Data::Hopen::G::Op';
 use Class::Tiny qw(output);

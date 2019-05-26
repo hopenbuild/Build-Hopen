@@ -3,7 +3,7 @@
 package Data::Hopen::Scope::Environment;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000013'; # TRIAL
+our $VERSION = '0.000013';
 
 use parent 'Data::Hopen::Scope';
 
@@ -86,7 +86,8 @@ sub _names_here {
     my ($self, %args) = getparameters('self', [qw(retval ; set)], @_);
     _set0 $args{set} or croak 'I only support set 0';
     $args{retval}->insert(keys %ENV);
-    hlog { __PACKAGE__ . '::_names_here', Dumper $args{retval} };
+    hlog { __PACKAGE__ . '::_names_here', Dumper $args{retval} } 9;
+        # Don't usually log, since the environment is often fairly hefty!
 } #_names_here()
 
 1;

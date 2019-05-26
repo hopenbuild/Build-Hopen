@@ -1,0 +1,43 @@
+#!perl
+# 001-entity.t: test Entity
+use rlib 'lib';
+use HopenTest;
+use Test::Fatal;
+use Scalar::Util qw(refaddr);
+
+use Data::Hopen::Util::MergeWithoutCloneBlessed;    # abort if we can't
+
+package BlessedReference {
+    use Class::Tiny qw(name);
+}
+
+# Construct
+my $merger = Data::Hopen::Util::MergeWithoutCloneBlessed->new('RETAINMENT_PRECEDENT');
+isa_ok($merger, 'Data::Hopen::Util::MergeWithoutCloneBlessed');
+
+# Setup a structure to test
+my $obj = BlessedReference->new;
+isa_ok($obj, 'BlessedReference');
+diag 'Obj is ' . $obj;
+
+my $arr = [1,2,$obj];
+my $hash = {3 => $obj, 4 => $obj};
+
+# Do the merge
+my $input = { foo => $arr, bar => $hash };
+my $output = $merger->merge({}, $input);
+diag Dumper $output;
+
+# Check the structure
+is(ref $output, 'HASH', 'hashrefs in -> hashref out');
+is(ref($output->{foo}), 'ARRAY', 'arrayref foo');
+cmp_ok(refaddr($output->{foo}), '!=', refaddr($arr), 'Created a new arrayref foo');
+is(ref($output->{bar}), 'HASH', 'hashref foo');
+cmp_ok(refaddr($output->{bar}), '!=', refaddr($hash), 'Created a new hashref bar');
+
+foreach($output->{foo}->[2], $output->{bar}->{3}, $output->{bar}->{4}) {
+    isa_ok($_, 'BlessedReference');
+    cmp_ok(refaddr($_), '==', refaddr($obj));
+}
+
+done_testing();

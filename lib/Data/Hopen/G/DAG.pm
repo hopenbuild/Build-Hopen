@@ -2,7 +2,7 @@
 package Data::Hopen::G::DAG;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000013'; # TRIAL
+our $VERSION = '0.000013';
 
 use parent 'Data::Hopen::G::Op';
 use Class::Tiny {
@@ -34,7 +34,9 @@ use Data::Hopen::G::Node;
 use Data::Hopen::G::CollectOp;
 use Data::Hopen::Util::Data qw(forward_opts);
 use Data::Hopen::OrderedPredecessorGraph;
+use Getargs::Mixed; # parameters, which doesn't permit undef
 use Hash::Merge;
+use Scalar::Util qw(refaddr);
 use Storable ();
 
 # Class data {{{1
@@ -157,9 +159,9 @@ sub _run {
     # Remove _final from the order for now - I don't yet know what it means
     # to traverse _final.
     warn "Last item in order isn't _final!  This might indicate a bug in hopen, or that some graph edges are missing."
-        unless $QUIET or $order[$#order] == $self->_final;
+        unless $QUIET or refaddr $order[$#order] == refaddr $self->_final;
 
-    @order = grep { $_ != $self->_final } @order;
+    @order = grep { refaddr $_ != refaddr $self->_final } @order;
 
     # --- Check for non-connected ops, and goals with no inputs ---
 
@@ -228,6 +230,7 @@ sub _run {
                 hlog { '  -- no links' };
                 $node_inputs->merge(%{$pred->outputs});
                     # TODO specify which set these are.
+                    # Use the predecessor's identity as the set.
                 next;
             }
 
@@ -237,6 +240,7 @@ sub _run {
             my $link_inputs = Data::Hopen::Scope::Hash->new->put(%{$hrPredOutputs});
                 # All links get the same outer scope --- they are parallel,
                 # not in series.
+                # TODO use the predecessor's identity as the set.
             $link_inputs->outer($self->scope);
                 # The links run at the same scope level as the node.
             $link_inputs->local(true);
@@ -265,14 +269,14 @@ sub _run {
 
         # Give the visitor a chance, and stash the results if necessary.
         if(eval { $node->DOES('Data::Hopen::G::Goal') }) {
-            $args{visitor}->visit_goal($node) if $args{visitor};
+            $args{visitor}->visit_goal($node, $node_inputs) if $args{visitor};
 
             # Save the result if there is one.  Don't save {}.
             # use $node->outputs, not $step_output, since the visitor may
             # alter $node->outputs.
             $retval->{$node->name} = $node->outputs if keys %{$node->outputs};
         } else {
-            $args{visitor}->visit_node($node) if $args{visitor};
+            $args{visitor}->visit_node($node, $node_inputs) if $args{visitor};
         }
 
     } #foreach node in topo-sort order
@@ -384,10 +388,9 @@ Returns the node, for the sake of chaining.
 =cut
 
 sub add {
-    my $self = shift or croak 'Need an instance';
-    my $node = shift or croak 'Need a node';
+    my ($self, undef, $node) = parameters('self', ['node'], @_);
     return if $self->_graph->has_vertex($node);
-    hlog { __PACKAGE__, 'adding', Dumper($node) } 2;
+    hlog { __PACKAGE__, $self->name, 'adding', Dumper($node) } 2;
 
     $self->_graph->add_vertex($node);
     #$self->_node_by_name->{$node->name} = $node if $node->name;

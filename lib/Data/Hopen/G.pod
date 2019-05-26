@@ -45,4 +45,9 @@ edges is expressed in a DAG.  A DAG has zero or more goals
 (L<Data::Hopen::G::Goal>) that represent named activities expressed
 in the DAG.
 
+=head1 VISITORS
+
+L<Data::Hopen::G::DAG/run> can take a C<visitor> parameter.  The visitor
+should be an instance of a concrete subclass of L<Data::Hopen::Visitor>.
+
 =cut

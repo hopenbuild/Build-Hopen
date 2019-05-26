@@ -3,7 +3,7 @@ package Data::Hopen::Scope;
 use Data::Hopen::Base;
 use Exporter 'import';
 
-our $VERSION = '0.000013'; # TRIAL
+our $VERSION = '0.000013';
 
 # Class definition
 use Class::Tiny {
@@ -242,7 +242,7 @@ and example:
 If no names are available in the given C<$levels>, returns an empty
 C<Set::Scalar>.
 
-TODO?  Support a C<$set> parameter?
+TODO support a C<$set> parameter
 
 =cut
 
@@ -277,7 +277,7 @@ If C<$levels> is not provided, go all the way to the outermost Scope.
 If C<$deep> is provided and truthy, make a deep copy of each value (using
 L<Data::Hopen/clone>.  Otherwise, just copy.
 
-TODO?  Support a C<$set> parameter?
+TODO support a C<$set> parameter
 
 =cut
 
@@ -361,6 +361,10 @@ sub _merger {
     die "Invalid merge strategy $s" unless defined $precedence;
 
     my $merger = Hash::Merge->new($precedence);
+    $merger->set_clone_behavior(false);
+        # TODO CHECKME --- I would rather clone everything except blessed
+        # references, but doing so appears to be nontrivial.  For now,
+        # I am trying not cloning.
     $self->_merger_instance($merger);
 
     return $merger;
