@@ -84,12 +84,12 @@ precedence.  Valid values (case-insensitive) are:
 (the default): L<Hash::Merge/Retainment Precedence>.  Same-name keys
 are merged, so no data is lost.
 
-=over C<"first">
+=item C<"first">
 
 L<Hash::Merge/Left Precedence>.  The first predecessor to add a value
 under a particular key will win.
 
-=over C<"last">
+=item C<"last">
 
 L<Hash::Merge/Right Precedence>.  The last predecessor to add a value
 under a particular key will win.
