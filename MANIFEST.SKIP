@@ -4,6 +4,7 @@
 
 # Miscellaneous
 ^\.editorconfig
+\.mailmap$
 ^\.[^\\\/]*\.yml
 \bfoo\b.*
 t/.*\.out$
@@ -11,7 +12,6 @@ lua$
 TEMPLATE
 Data-Hopen-.*
 TODO
-\brunhopen$
 \.stackdump$
 
 # Backup files

@@ -52,9 +52,6 @@ t/123-dag-warnings.t
 t/124-dag-merge-node-inputs.t
 t/998-sig-die.t
 t/999-extras-for-coverage.t
-t/dir200/inner.hopen.pl
-t/dir200/inner/.hopen.pl
-t/dir200/inner/z.hopen.pl
 t/lib/HopenTest.pm
 t/lib/PackagesInThisFile.pm
 xt/boilerplate.t

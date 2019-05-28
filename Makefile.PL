@@ -143,7 +143,7 @@ EOT
 # Main options for EUMM
 my %opts = (
     NAME             => 'Data::Hopen',
-    AUTHOR           => q{Christopher White <cxwembedded@gmail.com>},
+    AUTHOR           => q{Christopher White <cxw@cpan.org>},
     VERSION_FROM     => $VERSION_FROM,
     ABSTRACT_FROM    => $VERSION_FROM,
     LICENSE          => 'lgpl_2_1',
@@ -293,6 +293,10 @@ my %opts = (
                 },
             },
         },
+
+        x_contributors => [
+            'Mohammad S Anwar <manwar@cpan.org>',
+        ],
 
         @provides,
 
