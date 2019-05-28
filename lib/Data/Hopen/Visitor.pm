@@ -2,7 +2,7 @@
 package Data::Hopen::Visitor;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000013';
+our $VERSION = '0.000014'; # TRIAL
 
 use Class::Tiny;
 

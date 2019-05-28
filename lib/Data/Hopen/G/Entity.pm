@@ -6,7 +6,7 @@ use Data::Hopen::Base;
 use overload;
 use Scalar::Util qw(refaddr);
 
-our $VERSION = '0.000013';
+our $VERSION = '0.000014'; # TRIAL
 
 sub name;
 

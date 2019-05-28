@@ -6,7 +6,7 @@ use Exporter 'import';
 
 our @EXPORT; BEGIN { @EXPORT=qw(make_GraphBuilder); }
 
-our $VERSION = '0.000013';
+our $VERSION = '0.000014'; # TRIAL
 
 use Class::Tiny {
     name => 'ANON',     # Name is optional; it's here so the
@@ -16,6 +16,8 @@ use Class::Tiny {
 };
 
 use Class::Method::Modifiers qw(install_modifier);
+use Getargs::Mixed;
+use Scalar::Util qw(refaddr);
 
 # Docs {{{1
 
@@ -118,6 +120,33 @@ sub goal {
 
     return undef;   # undef: See comment in goal()
 } #goal()
+
+=head2 to
+
+Connect one node to another, where both are wrapped in C<GraphBuilder>s.
+Usage:
+
+    $builder_1->to($builder_2);
+        # No $builder_1->node has an edge to $builder_2->node
+
+Returns C<undef>, because chaining would be ambiguous.  For example,
+in the snippet above, would the chain continue from C<$builder_1> or
+C<$builder_2>?
+
+Does not change the state of either GraphBuilder.
+
+=cut
+
+sub to {
+    my ($self, %args) = parameters('self', [qw(dest)], @_);
+    croak 'Destination is not a ' . __PACKAGE__
+        unless $args{dest}->DOES(__PACKAGE__);
+    croak 'Cannot connect nodes from different graphs'
+        if refaddr($self->dag) != refaddr($args{dest}->dag);
+
+    $self->dag->connect($self->node, $args{dest}->node);
+    return undef;
+} #to()
 
 =head1 STATIC FUNCTIONS
 
