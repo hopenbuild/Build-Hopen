@@ -106,10 +106,10 @@ testhere:   # Run the tests from lib rather than blib
 \tprove -lj4
 
 README.md: @{[$VERSION_FROM]} Makefile.PL $make_readme_md
-\t"$secure_perl_path" "$make_readme_md" -i "\$<" -o "\$@" -f md --appveyor cxw42/data-hopen --avbadge hopenbuild/data-hopen
+\t"$secure_perl_path" "$make_readme_md" -i "\$<" -o "\$@" -f md --appveyor cxw42/data-hopen --travis hopenbuild/Data-Hopen
 
 README: @{[$VERSION_FROM]} Makefile.PL $make_readme_md
-\t"$secure_perl_path" "$make_readme_md" -i "\$<" -o "\$@" -f text --appveyor hopenbuild/Data-Hopen --avbadge hopenbuild/data-hopen
+\t"$secure_perl_path" "$make_readme_md" -i "\$<" -o "\$@" -f text --appveyor hopenbuild/Data-Hopen --travis hopenbuild/Data-Hopen
 
 all :: README.md README
 dist :: README.md README

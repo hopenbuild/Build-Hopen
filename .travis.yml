@@ -1,0 +1,15 @@
+language: perl
+perl:
+  - "5.26"
+  - "5.26-shrplib"
+  - "5.20"
+  - "5.18-shrplib"
+  - "5.14"
+  # 5.14 is the minimum Data-Hopen supports
+
+install:
+  - cpanm ExtUtils::MakeMaker
+    # Because EUMM v6.66 doesn't seem to generate the correct MYMETA.json,
+    # causing lib::relative not to be loaded as a dependency.  See, e.g.,
+    # https://travis-ci.org/cxw42/Class-Tiny-ConstrainedAccessor/jobs/535823908
+  - cpanm --with-recommends --verbose --installdeps --notest .
