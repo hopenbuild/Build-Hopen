@@ -13,6 +13,7 @@ TEMPLATE
 Data-Hopen-.*
 TODO
 \.stackdump$
+\bMETA_new\.yml\b
 
 # Backup files
 \.swp$
