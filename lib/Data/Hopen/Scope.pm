@@ -1,5 +1,6 @@
 # Data::Hopen::Scope - a nested key-value store
 package Data::Hopen::Scope;
+use strict;
 use Data::Hopen::Base;
 use Exporter 'import';
 

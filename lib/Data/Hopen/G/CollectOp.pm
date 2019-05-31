@@ -1,5 +1,6 @@
 # Data::Hopen::G::CollectOp - pull values from scope(s)
 package Data::Hopen::G::CollectOp;
+use strict;
 use Data::Hopen::Base;
 
 our $VERSION = '0.000014'; # TRIAL

@@ -1,6 +1,7 @@
 # Data::Hopen::Util::Data - general-purpose data-manipulation functions
 package Data::Hopen::Util::Data;
 use Data::Hopen;
+use strict;
 use Data::Hopen::Base;
 
 our $VERSION = '0.000014'; # TRIAL

@@ -290,6 +290,7 @@ my %opts = (
                 requires => {
                     'App::RewriteVersion' => '0',   # for perl-bump-version
                     'Module::Metadata' => '1.000016',
+                    'Test::Kwalitee' => '0',
                 },
             },
         },

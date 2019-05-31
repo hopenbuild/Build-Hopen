@@ -1,5 +1,6 @@
 # Data::Hopen::G::Link - base class for hopen edges
 package Data::Hopen::G::Link;
+use strict;
 use Data::Hopen::Base;
 
 our $VERSION = '0.000014'; # TRIAL

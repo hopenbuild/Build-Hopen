@@ -1,5 +1,6 @@
 # Data::Hopen::G::DAG - hopen build graph
 package Data::Hopen::G::DAG;
+use strict;
 use Data::Hopen::Base;
 
 our $VERSION = '0.000014'; # TRIAL

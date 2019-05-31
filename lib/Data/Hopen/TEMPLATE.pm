@@ -1,6 +1,7 @@
 # Data::Hopen::TEMPLATE - template for a hopen module
 package Data::Hopen::TEMPLATE;
 use Data::Hopen;
+use strict;
 use Data::Hopen::Base;
 
 our $VERSION = '0.000014'; # TRIAL

@@ -1,6 +1,7 @@
 # Data::Hopen::G::Node - base class for hopen nodes
 package Data::Hopen::G::Node;
 use Data::Hopen;
+use strict;
 use Data::Hopen::Base;
 
 our $VERSION = '0.000014'; # TRIAL

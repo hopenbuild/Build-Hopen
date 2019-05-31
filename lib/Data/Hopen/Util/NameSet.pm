@@ -1,5 +1,6 @@
 # Data::Hopen::Util::NameSet - set of strings and regexps
 package Data::Hopen::Util::NameSet;
+use strict;
 use Data::Hopen::Base;
 
 our $VERSION = '0.000014'; # TRIAL

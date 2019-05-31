@@ -1,6 +1,7 @@
 # Data::Hopen::G::Entity - base class for hopen's data model
 package Data::Hopen::G::Entity;
 use Data::Hopen;
+use strict;
 use Data::Hopen::Base;
 
 use overload;

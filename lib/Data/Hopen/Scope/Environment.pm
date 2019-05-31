@@ -1,6 +1,7 @@
 # Data::Hopen::Scope::Environment - a hopen Scope for %ENV
 # TODO handle $set == FIRST_ONLY
 package Data::Hopen::Scope::Environment;
+use strict;
 use Data::Hopen::Base;
 
 our $VERSION = '0.000014'; # TRIAL

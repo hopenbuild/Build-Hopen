@@ -1,6 +1,7 @@
 # Data::Hopen::G::Op - An individual operation
 package Data::Hopen::G::Op;
 use Data::Hopen;
+use strict;
 use Data::Hopen::Base;
 
 our $VERSION = '0.000014'; # TRIAL

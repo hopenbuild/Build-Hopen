@@ -1,6 +1,7 @@
 # Data::Hopen::G::GraphBuilder - fluent interface for building graphs
 package Data::Hopen::G::GraphBuilder;
 use Data::Hopen;
+use strict;
 use Data::Hopen::Base;
 use Exporter 'import';
 

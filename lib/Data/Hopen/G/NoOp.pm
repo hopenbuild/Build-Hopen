@@ -1,5 +1,6 @@
 # Data::Hopen::G::NoOp - null operation.  Used for testing.
 package Data::Hopen::G::NoOp;
+use strict;
 use Data::Hopen::Base;
 
 our $VERSION = '0.000014'; # TRIAL

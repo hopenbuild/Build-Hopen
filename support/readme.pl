@@ -57,7 +57,6 @@ open my $fh, '<', \$parsed;
 # Filter and tweak the POD
 my $saw_name = 0;
 my $tweak_name = ($format eq 'md');
-my $force_conventions = ($format eq 'md');
 my $output = '';
 
 while(my $line = <$fh>) {
@@ -84,8 +83,6 @@ while(my $line = <$fh>) {
     # Skip the internals
     $output .= $line if $line =~ /SUPPORT/;
     next if ($line =~ /VARIABLES/)..($line =~ /SUPPORT/);
-
-    $line =~ s{https://metacpan.org/pod/Data::Hopen::Conventions}{https://metacpan.org/pod/release/CXW/Build-Hopen-0.000006-TRIAL/lib/Build/Hopen/Conventions.pod} if $force_conventions;
 
     $output .= $line;   # Copy everything that's left.
 }
