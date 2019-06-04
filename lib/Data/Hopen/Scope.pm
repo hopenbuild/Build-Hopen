@@ -4,7 +4,7 @@ use strict;
 use Data::Hopen::Base;
 use Exporter 'import';
 
-our $VERSION = '0.000014'; # TRIAL
+our $VERSION = '0.000015';
 
 # Class definition
 use Class::Tiny {

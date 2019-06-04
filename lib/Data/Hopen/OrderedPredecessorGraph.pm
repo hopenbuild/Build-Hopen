@@ -3,7 +3,7 @@ package Data::Hopen::OrderedPredecessorGraph;
 use strict;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000014'; # TRIAL
+our $VERSION = '0.000015';
 
 use parent 'Graph';
 

@@ -55,6 +55,7 @@ t/999-extras-for-coverage.t
 t/lib/HopenTest.pm
 t/lib/PackagesInThisFile.pm
 xt/boilerplate.t
+xt/kwalitee.t
 xt/manifest.t
 xt/pod-coverage.t
 xt/pod.t

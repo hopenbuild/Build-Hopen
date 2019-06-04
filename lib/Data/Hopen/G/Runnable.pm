@@ -3,7 +3,7 @@ package Data::Hopen::G::Runnable;
 use strict;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000014'; # TRIAL
+our $VERSION = '0.000015';
 
 use Data::Hopen;
 use Data::Hopen::Scope::Hash;

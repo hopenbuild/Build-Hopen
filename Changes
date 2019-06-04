@@ -1,5 +1,8 @@
 Revision history for Data-Hopen
 
+0.000015    2019-06-04
+    - No changes - stable release of 0.000014
+
 0.000014    2019-05-30 (TRIAL RELEASE)
     - Added Data::Hopen::G::GraphBuilder::to()
     - Fix test failures on earlier Perl versions
