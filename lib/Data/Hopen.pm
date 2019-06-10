@@ -25,7 +25,7 @@ use Data::Hopen::Util::NameSet;
 use Getargs::Mixed;
 use Storable ();
 
-our $VERSION = '0.000015';
+our $VERSION = '0.000016'; # TRIAL
 
 # Docs {{{1
 
@@ -147,28 +147,6 @@ sub hnew {
     }
 } #hnew()
 
-=head2 loadfrom
-
-(Not exported by default) Load a package given a list of stems.  Usage:
-
-    my $fullname = loadfrom($name[, @stems]);
-
-Returns the full name of the loaded package, or falsy on failure.
-If C<@stems> is omitted, no stem is used, i.e., C<$name> is tried as-is.
-
-=cut
-
-sub loadfrom {
-    my $class = shift or croak 'Need a class';
-
-    foreach my $stem (@_, '') {
-        eval "require $stem$class";
-        return "$stem$class" unless $@;
-    }
-
-    return undef;
-} #loadfrom()
-
 =head2 hlog
 
 Log information if L</$VERBOSE> is set.  Usage:
@@ -234,6 +212,33 @@ sub getparameters {
     unshift @_, $GM;
     goto &Getargs::Mixed::parameters;
 } #getparameters()
+
+=head2 loadfrom
+
+(Not exported by default) Load a package given a list of stems.  Usage:
+
+    my $fullname = loadfrom($name[, @stems]);
+
+Returns the full name of the loaded package, or falsy on failure.
+If C<@stems> is omitted, no stem is used, i.e., C<$name> is tried as-is.
+
+=cut
+
+sub loadfrom {
+    my $class = shift or croak 'Need a class';
+
+    foreach my $stem (@_, '') {
+        hlog { loadfrom => "$stem$class" } 3;
+        eval "require $stem$class";
+        if($@) {
+            hlog { loadfrom => "$stem$class", 'load result was', $@ } 3;
+        } else {
+            return "$stem$class";
+        }
+    }
+
+    return undef;
+} #loadfrom()
 
 =head1 CONSTANTS
 

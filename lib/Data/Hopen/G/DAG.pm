@@ -3,7 +3,7 @@ package Data::Hopen::G::DAG;
 use strict;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000015';
+our $VERSION = '0.000016'; # TRIAL
 
 use parent 'Data::Hopen::G::Op';
 use Class::Tiny {
@@ -279,6 +279,9 @@ sub _run {
         } else {
             $args{visitor}->visit_node($node, $node_inputs) if $args{visitor};
         }
+
+        hlog { 'Finished node', $node->name, 'with outputs',
+            Dumper $node->outputs } 10;
 
     } #foreach node in topo-sort order
 

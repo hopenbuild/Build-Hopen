@@ -3,7 +3,7 @@ package Data::Hopen::Util::Filename;
 use strict;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000015';
+our $VERSION = '0.000016'; # TRIAL
 
 use parent 'Exporter';
 our (@EXPORT, @EXPORT_OK, %EXPORT_TAGS);
