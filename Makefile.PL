@@ -197,13 +197,12 @@ my %opts = (
         'Carp' => '0',
 
         'Class::Method::Modifiers' => '2.10',   # most recent code change
-        'Class::Tiny' => '1.000',   # New API.  NOTE: <1.001 has no BUILDARGS
+        'Class::Tiny' => '1.001',       # BUILDARGS
         #'Class::Tiny::Antlers' => '0',
 
         #'Class::Tiny::Chained' => '0.002',
             # - Looks like it might be handy.
             # 0.002+ because that has only core dependencies.
-
 
         ## 'Class::XPath' => '1.4',
         #'Clone::Choose' => '0.008',     # as used by Hash::Merge
