@@ -319,17 +319,27 @@ sub goal {
 
 =head2 connect
 
-   - C<DAG:connect(<op1>, <out-edge>, <in-edge>, <op2>)>:
-     connects output C<< out-edge >> of operation C<< op1 >> as input C<< in-edge >> of
-     operation C<< op2 >>.  No processing is done between output and input.
-     - C<< out-edge >> and C<< in-edge >> can be anything usable as a table index,
-       provided that table index appears in the corresponding operation's
-       descriptor.
-   - C<DAG:connect(<op1>, <op2>)>: creates a dependency edge from C<< op1 >> to
-     C<< op2 >>, indicating that C<< op1 >> must be run before C<< op2 >>.
-     Does not transfer any data from C<< op1 >> to C<< op2 >>.
-   - C<DAG:connect(<op1>, <Link>, <op2>)>: Connects C<< op1 >> to
-     C<< op2 >> via L<Data::Hopen::G::Link> C<< Link >>.
+=over 4
+
+=item - C<DAG:connect(<op1>, <out-edge>, <in-edge>, <op2>)>:
+
+Connects output C<< out-edge >> of operation C<< op1 >> as input C<< in-edge >> of
+operation C<< op2 >>.  No processing is done between output and input.
+C<< out-edge >> and C<< in-edge >> can be anything usable as a table index,
+provided that table index appears in the corresponding operation's
+descriptor.
+
+=item - C<DAG:connect(<op1>, <op2>)>:
+
+Creates a dependency edge from C<< op1 >> to
+C<< op2 >>, indicating that C<< op1 >> must be run before C<< op2 >>.
+Does not transfer any data from C<< op1 >> to C<< op2 >>.
+
+=item - C<DAG:connect(<op1>, <Link>, <op2>)>:
+
+Connects C<< op1 >> to C<< op2 >> via L<Data::Hopen::G::Link> C<< Link >>.
+
+=back
 
 TODO return the name of the edge?  The edge instance itself?  Maybe a
 fluent interface to the DAG for chaining C<connect> calls?
@@ -509,12 +519,18 @@ long as everything is hooked in before the DAG is run.
 
 The following is TODO:
 
-   - C<DAG::inject(<op1>,<op2>[, after/before'])>: Returns an operation that
-     lives on the edge between C<op1> and C<op2>.  If the third parameter is
-     false, C<'before'>, or omitted, the new operation will be the first
-     operation on that edge.  If the third parameter is true or C<'after'>,
-     the new operation will be the last operation on that edge.  Any number
-     of operations can be injected on any edge.
+=over 4
+
+=item - C<DAG::inject(<op1>,<op2>[, after/before'])>:
+
+Returns an operation that
+lives on the edge between C<op1> and C<op2>.  If the third parameter is
+false, C<'before'>, or omitted, the new operation will be the first
+operation on that edge.  If the third parameter is true or C<'after'>,
+the new operation will be the last operation on that edge.  Any number
+of operations can be injected on any edge.
+
+=back
 
 =cut
 
