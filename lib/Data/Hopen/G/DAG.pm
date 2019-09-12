@@ -132,7 +132,7 @@ each goal's outputs as the values under that name.  Usage:
     my $hrOutputs = $dag->run([-context=>$scope][, other options])
 
 C<$scope> must be a L<Data::Hopen::Scope> or subclass if provided.
-Other options are as L<Data::Hopen::Runnable/run>.
+Other options are as L<Data::Hopen::G::Runnable/run>.
 
 When evaluating a node, the edges from its predecessors are traversed in
 the order those predecessors were added to the graph.
