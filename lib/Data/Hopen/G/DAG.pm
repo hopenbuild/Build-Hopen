@@ -321,23 +321,21 @@ sub goal {
 
 =over 4
 
-=item - C<DAG:connect(<op1>, <out-edge>, <in-edge>, <op2>)>:
+=item - C<< DAG:connect(<op1>, <out-edge>, <in-edge>, <op2>) >>
 
-Connects output C<< out-edge >> of operation C<< op1 >> as input C<< in-edge >> of
-operation C<< op2 >>.  No processing is done between output and input.
-C<< out-edge >> and C<< in-edge >> can be anything usable as a table index,
-provided that table index appears in the corresponding operation's
-descriptor.
+Connects output C<out-edge> of operation C<op1> as input C<in-edge> of
+operation C<op2>.  No processing is done between output and input.
+C<out-edge> and C<in-edge> can be anything usable as a table index, provided
+that table index appears in the corresponding operation's descriptor.
 
-=item - C<DAG:connect(<op1>, <op2>)>:
+=item - C<< DAG:connect(<op1>, <op2>) >>
 
-Creates a dependency edge from C<< op1 >> to
-C<< op2 >>, indicating that C<< op1 >> must be run before C<< op2 >>.
-Does not transfer any data from C<< op1 >> to C<< op2 >>.
+Creates a dependency edge from C<op1> to C<op2>, indicating that C<op1> must be
+run before C<op2>.  Does not transfer any data from C<op1> to C<op2>.
 
-=item - C<DAG:connect(<op1>, <Link>, <op2>)>:
+=item - C<< DAG:connect(<op1>, <Link>, <op2>) >>
 
-Connects C<< op1 >> to C<< op2 >> via L<Data::Hopen::G::Link> C<< Link >>.
+Connects C<op1> to C<op2> via L<Data::Hopen::G::Link> C<Link>.
 
 =back
 
@@ -521,7 +519,7 @@ The following is TODO:
 
 =over 4
 
-=item - C<DAG::inject(<op1>,<op2>[, after/before'])>:
+=item - C<< DAG::inject(<op1>,<op2>[, after/before]) >>
 
 Returns an operation that
 lives on the edge between C<op1> and C<op2>.  If the third parameter is
