@@ -43,20 +43,15 @@ Convert a scalar to a Boolean as Perl does, except:
 
 C</^(false|off|no)$/i>
 
-=item * Truthy
-
-C<"0">
-
 =back
 
-So C<false>, C<off>, C<no>, empty string, C<undef>, and numeric C<0> are falsy,
-and all other values (including string C<'0'>) are truthy.
+So C<false>, C<off>, C<no>, empty string, C<undef>, numeric C<0>, and
+string C<'0'> are falsy, and all other values are truthy.
 
 =cut
 
 sub boolify {
-    return false if $_[0] =~ /^(false|off|no)$/i;
-    return true if $_[0] =~ /^0$/;
+    return false if ($_[0]//'') =~ /^(false|off|no)$/i;
     return !!$_[0];
 } #boolify()
 

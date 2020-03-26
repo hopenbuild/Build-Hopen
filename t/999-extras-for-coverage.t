@@ -143,6 +143,17 @@ package TestDataHopenGNode {
     }
 } #package DHGN
 
+package TestDataHopenUtilData {
+    use HopenTest;
+    use Data::Hopen::Util::Data qw(boolify);
+
+    sub run {
+        ok(boolify($_), "$_ -> truthy") foreach qw(1 true yes on);
+        ok(!boolify($_), ($_//'<undef>') . " -> falsy")
+            foreach (qw(false off no), 0, undef);
+    }
+} #package DHUD
+
 use PackagesInThisFile 'run';   # every package above that has a sub run()
 (diag($_), $_->run) foreach @PIF;
 
