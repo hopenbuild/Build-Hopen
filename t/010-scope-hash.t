@@ -1,7 +1,8 @@
 #!perl
-# t/010-scope.t: test Data::Hopen::Scope
+# t/010-scope-hash.t: test Data::Hopen::Scope::Hash
 use rlib 'lib';
 use HopenTest 'Data::Hopen::Scope::Hash';
+use Data::Hopen::Scope;
 
 sub makeset {
     my $set = Set::Scalar->new;
@@ -9,12 +10,16 @@ sub makeset {
     return $set;
 }
 
-# --- creation and put -----------------------------------------------
+# --- creation, put, and get -----------------------------------------
 my $s = $DUT->new();
 isa_ok($s, "$DUT");
 
 $s->put(foo => 42);
 cmp_ok($s->find('foo'), '==', 42, 'Retrieving works');
+cmp_ok($s->find('foo', 0), '==', 42, 'Retrieving from set 0 works');
+cmp_ok($s->find('foo', "0"), '==', 42, 'Retrieving from set "0" works');
+cmp_ok($s->find('foo', FIRST_ONLY), '==', 42, 'Retrieving from set FIRST_ONLY works');
+is_deeply($s->find('foo', '*'), {'0' => 42}, 'Retrieving from set "*" works');
 
 ok($s->names->is_equal(makeset('foo')), 'names works with a non-nested scope');
 ok($s->names(0)->is_equal(makeset('foo')), 'names(0) works with a non-nested scope');

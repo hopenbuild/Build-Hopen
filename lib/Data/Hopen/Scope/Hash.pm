@@ -1,5 +1,4 @@
 # Data::Hopen::Scope::Hash - a hash-based nested key-value store based
-# TODO handle $set == FIRST_ONLY
 package Data::Hopen::Scope::Hash;
 use strict;
 use Data::Hopen::Base;
@@ -15,7 +14,6 @@ use Data::Hopen qw(getparameters);
 #use Data::Hopen::Util::Data qw(clone);
 use Set::Scalar;
 #use Sub::ScopeFinalizer qw(scope_finalizer);
-
 
 # Docs {{{1
 
@@ -46,12 +44,13 @@ Not used, but provided so you can use L<Data::Hopen/hnew> to make Scopes.
 
 # }}}1
 
-# Don't support -set, but permit `-set=>0` for the sake of code calling
-# through the Scope interface.  Call as `_set0($set)`.
-# Returns truthy of OK, falsy if not.
+# Don't support -set, but permit `-set=>0` and `-set=>FIRST_ONLY` for the
+# sake of code calling # through the Scope interface.  Call as `_set0($set)`.
+# Returns truthy if OK, falsy if not.  May modify its argument.
 # Better a readily-obvious crash than a subtle bug!
 sub _set0 {
     $_[0] //= 0;    # Give the caller a default set
+    $_[0] = 0 if Data::Hopen::Scope::is_first_only($_[0]);
     my $set = shift;
     return false if defined($set) && $set ne '0' && $set ne '*';
     return true;
@@ -62,7 +61,7 @@ sub _set0 {
 Add key-value pairs to this scope.  See L<Data::Hopen::Scope/put>.  In this
 particular implementation, the last-added value for a particular key wins.
 
-TODO add $set option
+TODO add $set option once it's added to D::H::Scope::put().
 
 =cut
 

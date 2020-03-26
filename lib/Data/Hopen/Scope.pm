@@ -3,6 +3,7 @@ package Data::Hopen::Scope;
 use strict;
 use Data::Hopen::Base;
 use Exporter 'import';
+use Scalar::Util qw(refaddr);
 
 our $VERSION = '0.000016'; # TRIAL
 
@@ -19,7 +20,14 @@ use Class::Tiny {
 };
 
 # Static exports
-our @EXPORT; BEGIN { @EXPORT=qw(FIRST_ONLY); }
+use vars::i {
+    '@EXPORT' => [qw(FIRST_ONLY)],
+    '@EXPORT_OK' => [qw(is_first_only)],
+};
+use vars::i '%EXPORT_TAGS' => {
+    'default' => [@EXPORT],
+    'all' => [@EXPORT, @EXPORT_OK],
+};
 
 my $_first_only = {};
 sub FIRST_ONLY { $_first_only }
@@ -108,7 +116,7 @@ The methods generally receive the same parameters.  They are as follows.
 =head2 $name
 
 The name of an item to be looked up.  Names must be truthy.  That means,
-among other things, that C<'0'> is not a valid key.
+among other things, that C<'0'> is not a valid name.
 
 =head2 $set
 
@@ -442,6 +450,20 @@ Returns the value, or C<undef> if not found.
 sub _find_here {
     ...
 } #_find_here()
+
+=head1 HELPER FUNCTIONS
+
+=head2 is_first_only
+
+Test whether the given scalar is L</FIRST_ONLY>.  Usage: C<is_first_only($x)>.
+
+=cut
+
+sub is_first_only {
+    ref $_[0] &&
+    ref $_[0] eq ref $_first_only &&
+    refaddr $_[0] == refaddr $_first_only
+} #is_first_only()
 
 1;
 __END__
