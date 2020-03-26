@@ -86,19 +86,10 @@ package TestDataHopen {
         $VERBOSE = 0;
     } #test_hlog()
 
-    sub test_isMYH {
-        ok isMYH('MY.hopen.pl'), 'MY.hopen.pl is MYH';
-        ok !isMYH('foo'), 'foo is not MYH';
-
-        ok(isMYH, 'MY.hopen.pl is MYH ($_)') for 'MY.hopen.pl';
-        ok(!isMYH, 'foo is not MYH ($_)') for 'foo';
-    }
-
     sub run {
         test_hnew;
         test_loadfrom;
         test_hlog;
-        test_isMYH;
     }
 } #package DH
 
