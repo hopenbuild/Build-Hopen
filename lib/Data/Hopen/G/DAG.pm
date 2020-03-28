@@ -179,6 +179,7 @@ sub _run {
 
     # --- Set up for the merge ---
 
+    # TODO use Hash::Match or something similar to clean up this map
     my $merge_strategy =
         !defined $self->winner ? 'combine' :
             $self->winner =~ /^first$/i ? 'keep' :

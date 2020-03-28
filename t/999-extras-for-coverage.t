@@ -47,6 +47,26 @@ package TestDataHopen {
         # Invalid invocations
         like exception { loadfrom(); }, qr/Need a class/,
             'loadfrom dies without a class name';
+
+        # Verbose output, unsuccessful
+        my $msg = capture_stderr {
+            $QUIET = false;
+            $VERBOSE = 3;
+            loadfrom('MY::NONEXISTENT');
+        };
+        like $msg, qr/loadfrom\s+MY::NONEXISTENT/, 'loadfrom verbose: Name logged';
+        like $msg, qr/Can't locate\s+MY[\/\\]NONEXISTENT\b/, 'loadfrom verbose: Error message logged';
+
+        # Verbose output, successful
+        my $retval;
+        my $msg = capture_stderr {
+            $QUIET = false;
+            $VERBOSE = 3;
+            $retval = loadfrom('Data::Hopen');
+        };
+        like $msg, qr/loadfrom\s+Data::Hopen/, 'loadfrom verbose ok: Name logged';
+        unlike $msg, qr/Can't locate/, 'loadfrom verbose ok: No error message';
+        is $retval, 'Data::Hopen', 'loadfrom verbose ok: return value';
     }
 
     sub test_hlog {
@@ -58,6 +78,8 @@ package TestDataHopen {
             ('normal', 1, false, qr/\b42\b/)
             ('normal level 2 verbose 1', 1, false, qr/^$/, 2)
             ('normal level 2 verbose 2', 2, false, qr/\b42\b/, 2)
+            ('normal level 3 verbose 3', 3, false, qr/\b42\b.+\(at/, 3)
+            ('normal level 4 verbose 3', 3, false, qr//, 4)
         ;
 
         for my $lrTest (@{ $tests->arr }) {
