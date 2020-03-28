@@ -37,13 +37,14 @@ use Data::Hopen::Util::Data qw(forward_opts);
 use Data::Hopen::OrderedPredecessorGraph;
 use Getargs::Mixed; # parameters, which doesn't permit undef
 use Hash::Merge;
+use Regexp::Assemble;
 use Scalar::Util qw(refaddr);
 use Storable ();
 
 # Class data {{{1
 
 use constant {
-    LINKS => 'link_list',    # Graph edge attr: array of BHG::Link instances
+    LINKS => 'link_list',    # Graph edge attr: array of DHG::Link instances
 };
 
 # A counter used for making unique names
@@ -80,17 +81,17 @@ precedence.  Valid values (case-insensitive) are:
 
 =over
 
-=item C<undef>
+=item C<undef> or C<'combine'>
 
 (the default): L<Hash::Merge/Retainment Precedence>.  Same-name keys
 are merged, so no data is lost.
 
-=item C<"first">
+=item C<'first'> or C<'keep'>
 
 L<Hash::Merge/Left Precedence>.  The first predecessor to add a value
 under a particular key will win.
 
-=item C<"last">
+=item C<'last'> or C<'replace'>
 
 L<Hash::Merge/Right Precedence>.  The last predecessor to add a value
 under a particular key will win.
@@ -179,13 +180,18 @@ sub _run {
 
     # --- Set up for the merge ---
 
-    # TODO use Hash::Match or something similar to clean up this map
-    my $merge_strategy =
-        !defined $self->winner ? 'combine' :
-            $self->winner =~ /^first$/i ? 'keep' :
-                $self->winner =~ /^last$/i ? 'replace' :
-                    undef;
-    die "Invalid winner value ${[$self->winner]}" if !defined $merge_strategy;
+    state %STRATEGIES = (   # regex => strategy
+        '(<undef>|combine)' => 'combine',
+        '(first|keep)' => 'keep',
+        '(last|replace)' => 'replace',
+    );
+    state $STRATEGY_MAP = Regexp::Assemble->new->flags('i')->track(1)
+        ->anchor_string_begin->anchor_string_end
+        ->add(keys %STRATEGIES);
+
+    my $merge_strategy_idx = $STRATEGY_MAP->match($self->winner // '<undef>');
+    die "Invalid winner value ${[$self->winner]}" unless defined $merge_strategy_idx;
+    my $merge_strategy = $STRATEGIES{$merge_strategy_idx};
 
     # --- Traverse ---
 
@@ -206,7 +212,7 @@ sub _run {
         # The scope stack is (outer to inner) DAG's inputs, DAG's overrides,
         # then $node_inputs, then the individual node's overrides.
         my $node_inputs = Data::Hopen::Scope::Hash->new;
-            # TODO make this a BH::Scope::Inputs once it's implemented
+            # TODO make this a DH::Scope::Inputs once it's implemented
         $node_inputs->outer($self->scope);
             # Data specifically being provided to the current node, e.g.,
             # on input edges, beats the scope of the DAG as a whole.
@@ -378,7 +384,7 @@ sub connect {
     $self->_graph->add_edge($op1, $op2);
     #$self->_node_by_name->{$_->name} = $_ foreach ($op1, $op2);
 
-    # Save the BHG::Link as an edge attribute (not idempotent!)
+    # Save the DHG::Link as an edge attribute (not idempotent!)
     if($link) {
         my $attrs = $self->_graph->get_edge_attribute($op1, $op2, LINKS) || [];
         push @$attrs, $link;

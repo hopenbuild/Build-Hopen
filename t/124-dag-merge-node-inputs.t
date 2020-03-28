@@ -8,7 +8,7 @@ use Data::Hopen::Scope::Hash;
 use Data::Hopen::Scope::Environment;
 use Data::Hopen::G::Link;
 
-$Data::Hopen::VERBOSE = @ARGV;
+$Data::Hopen::VERBOSE = 10;  # for coverage
 
 run();
 done_testing();

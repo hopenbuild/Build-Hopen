@@ -258,6 +258,8 @@ my %opts = (
 
         #'Role::Tiny' => '1.000000',            # version num from Antlers
 
+        #'List::Util' => '1.29',     # for pairkeys, pairvalues
+        'Regexp::Assemble' => '0.38',
         'Scalar::Util' => '0',
         'Set::Scalar' => '1.27',    # For correct metadata
         'Storable' => '3.06',

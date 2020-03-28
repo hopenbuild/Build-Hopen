@@ -1,3 +1,4 @@
+# Auto-generated from Makefile.PL by cpanfile-from-Makefile-PL at Sat Mar 28 14:14:01 2020
 requires 'Carp';
 requires 'Class::Method::Modifiers', '2.10';
 requires 'Class::Tiny', '1.001';
@@ -11,6 +12,7 @@ requires 'Graph', '0.9704';
 requires 'Hash::Merge', '0.299';
 requires 'Import::Into';
 requires 'Path::Class', '0.37';
+requires 'Regexp::Assemble', '0.38';
 requires 'Scalar::Util';
 requires 'Set::Scalar', '1.27';
 requires 'Storable', '3.06';
