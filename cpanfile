@@ -1,4 +1,4 @@
-# Auto-generated from Makefile.PL by cpanfile-from-Makefile-PL at Sat Mar 28 14:14:01 2020
+# Auto-generated from Makefile.PL by cpanfile-from-Makefile-PL
 requires 'Carp';
 requires 'Class::Method::Modifiers', '2.10';
 requires 'Class::Tiny', '1.001';
@@ -23,6 +23,7 @@ requires 'feature';
 requires 'overload';
 requires 'perl', '5.014';
 requires 'strict';
+requires 'vars::i', '2.000000';
 requires 'warnings';
 
 on configure => sub {

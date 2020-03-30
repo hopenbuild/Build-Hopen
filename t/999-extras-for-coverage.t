@@ -167,13 +167,49 @@ package TestDataHopenGNode {
 
 package TestDataHopenUtilData {
     use HopenTest;
-    use Data::Hopen::Util::Data qw(boolify);
+    use Data::Hopen::Util::Data qw(boolify clone dedent);
+    use List::AutoNumbered;
+    use Scalar::Util qw(refaddr);
 
-    sub run {
+    my @TESTS;
+    push @TESTS, sub {  # boolify
         ok(boolify($_), "$_ -> truthy") foreach qw(1 true yes on);
         ok(!boolify($_), ($_//'<undef>') . " -> falsy")
             foreach (qw(false off no), 0, undef);
-    }
+    };
+
+    push @TESTS, sub {  # clone
+        cmp_ok(clone(42), '==', 42, 'Clone ==');
+        is(clone('foo'), 'foo', 'Clone eq');
+        my $x = [1, 'foo', {bar => 'bat'}];
+        my $clone_x = clone($x);
+        is_deeply($clone_x, $x, 'Clone deeply');
+        cmp_ok(refaddr($x), '!=', refaddr($clone_x), "Clone isn't original");
+    };
+
+    push @TESTS, sub {  # dedent
+        my $tests = List::AutoNumbered->new(__LINE__);
+        $tests->load([" some\n multiline string"], "some\nmultiline string")->
+        ([ [], q(
+        very indented
+    ) ], "very indented\n")
+        (["not\nindented\nat all"], "not\nindented\nat all")
+        (["\ninitial newline\n  and some more"], "\ninitial newline\n  and some more")
+        ;
+
+        for my $test (@$tests) {
+            my @args = @{$test->[1]};
+            my $got = dedent @args;
+            is($got, $test->[2], 'dedent (line ' . $test->[0] . ')');
+
+            # Test $_
+            local $_ = pop @args;
+            $got = dedent @args;
+            is($got, $test->[2], 'dedent $_ (line ' . $test->[0] . ')');
+        }
+    };
+
+    sub run { &$_ foreach @TESTS; }
 } #package DHUD
 
 use PackagesInThisFile 'run';   # every package above that has a sub run()

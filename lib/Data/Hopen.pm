@@ -7,18 +7,18 @@ use strict;
 use Data::Hopen::Base;
 
 use parent 'Exporter';
-our (@EXPORT, @EXPORT_OK, %EXPORT_TAGS);
-BEGIN {
-    # TODO move more of these to a separate utility package?
-    # Probably keep hnew, hlog, $VERBOSE, and $QUIET here.
-    @EXPORT = qw(hnew hlog getparameters);
-    @EXPORT_OK = qw(loadfrom $VERBOSE $QUIET UNSPECIFIED NOTHING);
-    %EXPORT_TAGS = (
-        default => [@EXPORT],
-        v => [qw($VERBOSE $QUIET)],
-        all => [@EXPORT, @EXPORT_OK]
-    );
-}
+
+# TODO move more of these to a separate utility package?
+# Probably keep hnew, hlog, $VERBOSE, and $QUIET here.
+use vars::i {
+    '@EXPORT' => [qw(hnew hlog getparameters)],
+    '@EXPORT_OK' => [qw(loadfrom *VERBOSE *QUIET UNSPECIFIED NOTHING)],
+};                              #^ * => can be localized
+use vars::i '%EXPORT_TAGS' => {
+    default => [@EXPORT],
+    v => [qw(*VERBOSE *QUIET)],
+    all => [@EXPORT, @EXPORT_OK],
+};
 
 use Data::Hopen::Util::NameSet;
 use Getargs::Mixed;

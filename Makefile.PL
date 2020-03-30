@@ -269,6 +269,7 @@ my %opts = (
         'Sub::ScopeFinalizer' => '0.02',        # For correct META.yml
 
         'strict' => '0',
+        'vars::i' => '2.000000',
         'warnings' => '0',
     },
 

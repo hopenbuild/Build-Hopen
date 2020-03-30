@@ -28,7 +28,7 @@ use Class::Tiny {
     # TODO? also support fini to run operations after _graph runs?
 };
 
-use Data::Hopen qw(hlog getparameters $QUIET);
+use Data::Hopen qw(hlog getparameters *QUIET);
 use Data::Hopen::G::Goal;
 use Data::Hopen::G::Link;
 use Data::Hopen::G::Node;
@@ -190,7 +190,7 @@ sub _run {
         ->add(keys %STRATEGIES);
 
     my $merge_strategy_idx = $STRATEGY_MAP->match($self->winner // '<undef>');
-    die "Invalid winner value ${[$self->winner]}" unless defined $merge_strategy_idx;
+    die "Invalid winner value @{[$self->winner]}" unless defined $merge_strategy_idx;
     my $merge_strategy = $STRATEGIES{$merge_strategy_idx};
 
     # --- Traverse ---

@@ -101,14 +101,24 @@ sub dedent {
     my $val = @_ ? $_[0] : $_;
     my $initial_NL;
 
-    if($val =~ /\A\n/) {
+    if(substr($val, 0, 1) eq "\n") {
         $initial_NL = true;
-        $val =~ s/^\A\n//;
+        $val = substr($val, 1);
     }
 
-    if($val =~ m/^(?<ws>\h+)\S/m) {
-        $val =~ s/^$+{ws}//gm;
+    # Find first nonblank
+    my $ws;
+    while(my ($line) = ($val =~ m/^(.*)$/mg)) {
+        if($line =~ m/^(?<ws>\h+)\S/m) { # nonblank with leading ws
+            $ws = $+{ws};
+            last;
+        } elsif($line =~ m/\S/) {       # nonblank without leading ws
+            last;
+        }
     }
+
+    # Strip leading WS
+    $val =~ s/^\Q$ws\E//gm if defined $ws;
 
     $val =~ s/^\h+\z//m if $extra_trim;
 
