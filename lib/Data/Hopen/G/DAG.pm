@@ -243,29 +243,39 @@ sub _run {
             }
 
             # More complex case: Process all the links
+
+            # Helper function to wrap a hashref in the right scope for a link input
+            local *make_link_inputs = sub {
+                my $hrIn = shift;
+                my $scLinkInputs = Data::Hopen::Scope::Hash->new->put(%$hrIn);
+                    # All links get the same outer scope --- they are parallel,
+                    # not in series.
+                    # TODO? use the predecessor's identity as the set.
+                $scLinkInputs->outer($self->scope);
+                    # The links run at the same scope level as the node.
+                $scLinkInputs->local(true);
+                return $scLinkInputs;
+            };
+
+            # Make the first link's input scope
             my $hrPredOutputs = $pred->outputs;
                 # In one test, outputs was undef if not on its own line.
-            my $link_inputs = Data::Hopen::Scope::Hash->new->put(%{$hrPredOutputs});
-                # All links get the same outer scope --- they are parallel,
-                # not in series.
-                # TODO use the predecessor's identity as the set.
-            $link_inputs->outer($self->scope);
-                # The links run at the same scope level as the node.
-            $link_inputs->local(true);
+            my $scLinkInputs = make_link_inputs($hrPredOutputs);
 
             # Run the links in series - not parallel!
-            my $link_outputs = $link_inputs->as_hashref(-levels=>'local');
+            my $hrLinkOutputs = $scLinkInputs->as_hashref(-levels=>'local');
             foreach my $link (@$links) {
                 hlog { ('From', $pred->name, 'via', $link->name, 'to', $node->name) };
 
-                $link_outputs = $link->run(
-                    -context=>$link_inputs,
+                $hrLinkOutputs = $link->run(
+                    -context=>$scLinkInputs,
                     forward_opts(\%args, {'-'=>1}, 'phase')
                     # visitor not passed to links.
                 );
+                $scLinkInputs = make_link_inputs($hrLinkOutputs);
             } #foreach incoming link
 
-            $node_inputs->merge(%{$link_outputs});
+            $node_inputs->merge(%$hrLinkOutputs);
                 # TODO specify which set these are.
 
         } #foreach predecessor node
@@ -330,6 +340,7 @@ sub goal {
 
 =item - C<< DAG:connect(<op1>, <out-edge>, <in-edge>, <op2>) >>
 
+B<Not yet implemented>.
 Connects output C<out-edge> of operation C<op1> as input C<in-edge> of
 operation C<op2>.  No processing is done between output and input.
 C<out-edge> and C<in-edge> can be anything usable as a table index, provided
@@ -343,38 +354,38 @@ run before C<op2>.  Does not transfer any data from C<op1> to C<op2>.
 =item - C<< DAG:connect(<op1>, <Link>, <op2>) >>
 
 Connects C<op1> to C<op2> via L<Data::Hopen::G::Link> C<Link>.
+C<Link> may be undef, in which case this is treated as the two-parameter form.
+
+If there are already link(s) on the edge from C<op1> to C<op2>, the new link
+is added after the last existing link.
 
 =back
 
 TODO return the name of the edge?  The edge instance itself?  Maybe a
 fluent interface to the DAG for chaining C<connect> calls?
 
+TODO remove the out-edge and in-edge parameters?
+
 =cut
 
 sub connect {
     my $self = shift or croak 'Need an instance';
-    my ($op1, $out_edge, $in_edge, $op2) = @_;
+    my ($op1, $out_edge, $in_edge, $op2, $link);
 
-    my $link;
-    if(!defined($in_edge)) {    # dependency edge
-        $op2 = $out_edge;
-        $out_edge = false;      # No outputs
-        $in_edge = false;       # No inputs
-    } elsif(!defined($op2)) {
-        $op2 = $in_edge;
-        $link = $out_edge;
-        $out_edge = false;      # No outputs TODO
-        $in_edge = false;       # No inputs TODO
+    # Unpack args
+    #if(@_ == 4) {
+    #    ($op2, $out_edge, $in_edge, $op2) = @_;
+    #} else the following
+    if(@_ == 3) {
+        ($op1, $link, $op2) = @_;
+    } elsif(@_ == 2) {
+        ($op1, $op2) = @_;
+    } else {
+        die "Invalid arguments";
     }
 
-#    # Create the link
-#    unless($link) {
-#        $link = Data::Hopen::G::Link->new(
-#            name => 'link_' . $op1->name . '_' . $op2->name,
-#            in => [$out_edge],      # Output of op1
-#            out => [$in_edge],      # Input to op2
-#        );
-#    }
+    #my $out_edge = false;      # No outputs    TODO use these?
+    #my $in_edge = false;       # No inputs
 
     hlog { 'DAG::connect(): Edge from', $op1->name,
             'via', $link ? $link->name : '(no link)',
@@ -382,7 +393,7 @@ sub connect {
 
     # Add it to the graph (idempotent)
     $self->_graph->add_edge($op1, $op2);
-    #$self->_node_by_name->{$_->name} = $_ foreach ($op1, $op2);
+    # $self->_node_by_name->{$_->name} = $_ foreach ($op1, $op2);
 
     # Save the DHG::Link as an edge attribute (not idempotent!)
     if($link) {

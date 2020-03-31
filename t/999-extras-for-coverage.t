@@ -28,7 +28,11 @@ package TestDataHopen {
         like exception { hnew('MY::ReturnsFalsyInstance') },
             qr/Could not create instance/, 'hnew(<existent but falsy>) throws';
 
-        ok hnew(DAG => 'foo'), 'hnew DAG works';
+        my $dag = hnew(DAG => 'foo');
+        ok $dag, 'hnew DAG works';
+        like exception { $dag->connect() }, qr/argument/, 'DAG::connect() throws with 0 args';
+        like exception { $dag->connect(1) }, qr/argument/, 'DAG::connect() throws with 1 arg';
+        like exception { $dag->connect(1..5) }, qr/argument/, 'DAG::connect() throws with 5 args';
     }
 
     sub test_loadfrom {

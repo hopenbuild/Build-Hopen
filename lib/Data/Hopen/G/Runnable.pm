@@ -150,7 +150,7 @@ by L<Data::Hopen::Scope/local>.  Usage:
     my $hashref = $runnable->passthrough([-context => $outer_scope]);
         # To use $outer_scope as the context
     my $hashref = $runnable->passthrough(-nocontext => 1);
-        # To leave the context untouched
+        # To ignore the context
 
 Other valid options include L<-levels|Data::Hopen::Scope/$levels>.
 

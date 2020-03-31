@@ -33,6 +33,9 @@ Copy the inputs to the outputs.
 
 The output is C<{}> if no inputs are provided.
 
+By default, the output is a copy of the inputs
+(see L<Data::Hopen::G::Runnable/passthrough>).
+
 =cut
 
 sub _run {

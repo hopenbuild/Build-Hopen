@@ -4,7 +4,7 @@ use rlib 'lib';
 use HopenTest;
 use Test::Fatal;
 
-use Data::Hopen qw(:default *QUIET);
+use Data::Hopen;
 use Data::Hopen::Scope::Hash;
 use Data::Hopen::Scope::Environment;
 use Data::Hopen::G::Link;
