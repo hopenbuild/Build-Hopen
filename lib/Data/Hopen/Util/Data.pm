@@ -108,7 +108,8 @@ sub dedent {
 
     # Find first nonblank
     my $ws;
-    while(my ($line) = ($val =~ m/^(.*)$/mg)) {
+    while($val =~ m/^(.*)$/mg) {
+        my $line = $1;
         if($line =~ m/^(?<ws>\h+)\S/m) { # nonblank with leading ws
             $ws = $+{ws};
             last;
@@ -167,58 +168,59 @@ sub forward_opts {
     return %result;
 } #forward_opts()
 
-=head2 identical
-
-Return truthy if the given parameters are identical objects.
-Taken from L<Test::Identity> by Paul Evans, which is licensed under the same
-terms as Perl itself.
-
-=cut
-
-sub _describe
-{
-    my ( $ref ) = @_;
-
-    if( !defined $ref ) {
-        return "undef";
-    }
-    elsif( !refaddr $ref ) {
-        return "a non-reference";
-    }
-    elsif( blessed $ref ) {
-        return "a reference to a " . ref( $ref );
-    }
-    else {
-        return "an anonymous " . ref( $ref ) . " ref";
-    }
-} #_describe()
-
-sub identical($$)
-{
-    my ( $got, $expected ) = @_;
-
-    my $got_desc = _describe $got;
-    my $exp_desc = _describe $expected;
-
-    # TODO: Consider if undef/undef ought to do this...
-    if( $got_desc ne $exp_desc ) {
-        return false;
-    }
-
-    if( !defined $got ) {
-        # Two undefs
-        return true;
-    }
-
-    my $got_addr = refaddr $got;
-    my $exp_addr = refaddr $expected;
-
-    if( $got_addr != $exp_addr ) {
-        return false;
-    }
-
-    return true;
-} #identical()
+# The following are commented out as they are not currently in use.
+#=head2 identical
+#
+#Return truthy if the given parameters are identical objects.
+#Taken from L<Test::Identity> by Paul Evans, which is licensed under the same
+#terms as Perl itself.
+#
+#=cut
+#
+#sub _describe
+#{
+#    my ( $ref ) = @_;
+#
+#    if( !defined $ref ) {
+#        return "undef";
+#    }
+#    elsif( !refaddr $ref ) {
+#        return "a non-reference";
+#    }
+#    elsif( blessed $ref ) {
+#        return "a reference to a " . ref( $ref );
+#    }
+#    else {
+#        return "an anonymous " . ref( $ref ) . " ref";
+#    }
+#} #_describe()
+#
+#sub identical($$)
+#{
+#    my ( $got, $expected ) = @_;
+#
+#    my $got_desc = _describe $got;
+#    my $exp_desc = _describe $expected;
+#
+#    # TODO: Consider if undef/undef ought to do this...
+#    if( $got_desc ne $exp_desc ) {
+#        return false;
+#    }
+#
+#    if( !defined $got ) {
+#        # Two undefs
+#        return true;
+#    }
+#
+#    my $got_addr = refaddr $got;
+#    my $exp_addr = refaddr $expected;
+#
+#    if( $got_addr != $exp_addr ) {
+#        return false;
+#    }
+#
+#    return true;
+#} #identical()
 
 1;
 __END__

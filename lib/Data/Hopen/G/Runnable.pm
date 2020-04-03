@@ -135,11 +135,17 @@ Parameters are C<-phase> and C<-visitor>, and are always passed by name
 (C<< -phase=>$p, -visitor=>$v >>).  C<_run> is always called in scalar context,
 and B<must> return a new hashref.
 
+I recommend starting your C<_run> function with:
+
+    my ($self, %args) = getparameters('self', [qw(; phase visitor)], @_);
+
+and working from there.
+
 =cut
 
 sub _run {
-    my ($self, %args) = getparameters('self', [qw(; phase visitor)], @_);
-    ...
+    # uncoverable subroutine
+    die('Unimplemented'); # uncoverable statement
 }
 
 =head2 passthrough
