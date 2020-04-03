@@ -36,7 +36,7 @@ package TestDataHopen {
     }
 
     sub test_loadfrom {
-        my $pkgname;
+        my ($pkgname, $msg, $retval);
 
         $pkgname = loadfrom('Data::Hopen::Scope');
         is $pkgname, 'Data::Hopen::Scope', 'loadfrom finds literal name';
@@ -53,17 +53,16 @@ package TestDataHopen {
             'loadfrom dies without a class name';
 
         # Verbose output, unsuccessful
-        my $msg = capture_stderr {
-            $QUIET = false;
-            $VERBOSE = 3;
+        $msg = capture_stderr {
+            local $QUIET = false;
+            local $VERBOSE = 3;
             loadfrom('MY::NONEXISTENT');
         };
         like $msg, qr/loadfrom\s+MY::NONEXISTENT/, 'loadfrom verbose: Name logged';
         like $msg, qr/Can't locate\s+MY[\/\\]NONEXISTENT\b/, 'loadfrom verbose: Error message logged';
 
         # Verbose output, successful
-        my $retval;
-        my $msg = capture_stderr {
+        $msg = capture_stderr {
             $QUIET = false;
             $VERBOSE = 3;
             $retval = loadfrom('Data::Hopen');
@@ -171,9 +170,10 @@ package TestDataHopenGNode {
 
 package TestDataHopenUtilData {
     use HopenTest;
-    use Data::Hopen::Util::Data qw(boolify clone dedent);
+    use Data::Hopen::Util::Data qw(boolify clone dedent forward_opts);
     use List::AutoNumbered;
     use Scalar::Util qw(refaddr);
+    use Test::Fatal;
 
     my @TESTS;
     push @TESTS, sub {  # boolify
@@ -194,11 +194,15 @@ package TestDataHopenUtilData {
     push @TESTS, sub {  # dedent
         my $tests = List::AutoNumbered->new(__LINE__);
         $tests->load([" some\n multiline string"], "some\nmultiline string")->
+        (["no NL"], "no NL")
+        (["  leading WS"],"leading WS")
+        (["trailing WS  "], "trailing WS  ")
         ([ [], q(
         very indented
     ) ], "very indented\n")
         (["not\nindented\nat all"], "not\nindented\nat all")
         (["\ninitial newline\n  and some more"], "\ninitial newline\n  and some more")
+        (["    \nleading WS on nonblank line not stripped"], "    \nleading WS on nonblank line not stripped")
         ;
 
         for my $test (@$tests) {
@@ -211,6 +215,15 @@ package TestDataHopenUtilData {
             $got = dedent @args;
             is($got, $test->[2], 'dedent $_ (line ' . $test->[0] . ')');
         }
+    };
+
+    push @TESTS, sub {
+        like(exception { forward_opts; }, qr/Need/, 'forward_opts requires arg');
+        like(exception { forward_opts [] }, qr/hashref/, 'forward_opts requires hashref');
+        is_deeply(+{forward_opts({foo=>42}, 'foo')}, {foo=>42}, 'forward_opts: plain');
+        is_deeply(+{forward_opts({foo=>42}, {}, 'foo')}, {foo=>42}, 'forward_opts: empty opts');
+        is_deeply(+{forward_opts({FOO=>42}, {lc=>1}, 'FOO')}, {foo=>42}, 'forward_opts: lc');
+        is_deeply(+{forward_opts({foo=>42}, {'-'=>1}, 'foo')}, {-foo=>42}, 'forward_opts: -');
     };
 
     sub run { &$_ foreach @TESTS; }
