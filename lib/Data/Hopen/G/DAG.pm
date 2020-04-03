@@ -180,18 +180,18 @@ sub _run {
 
     # --- Set up for the merge ---
 
-    state %STRATEGIES = (   # regex => strategy
+    state $STRATEGIES = {   # regex => strategy
         '(<undef>|combine)' => 'combine',
         '(first|keep)' => 'keep',
         '(last|replace)' => 'replace',
-    );
+    };
     state $STRATEGY_MAP = Regexp::Assemble->new->flags('i')->track(1)
         ->anchor_string_begin->anchor_string_end
-        ->add(keys %STRATEGIES);
+        ->add(keys %$STRATEGIES);
 
     my $merge_strategy_idx = $STRATEGY_MAP->match($self->winner // '<undef>');
     die "Invalid winner value @{[$self->winner]}" unless defined $merge_strategy_idx;
-    my $merge_strategy = $STRATEGIES{$merge_strategy_idx};
+    my $merge_strategy = $STRATEGIES->{$merge_strategy_idx};
 
     # --- Traverse ---
 
