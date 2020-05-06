@@ -6,6 +6,7 @@ use Data::Hopen::Base;
 
 our $VERSION = '0.000016'; # TRIAL
 
+use Data::Hopen::Scope qw(:default :internal);
 use parent 'Data::Hopen::Scope';
 
 use Data::Hopen qw(hlog getparameters);
@@ -33,17 +34,6 @@ Note: L<Data::Hopen::Scope/merge> is unsupported.
 # }}}1
 
 ### Protected functions ###
-
-# Don't support -set, but permit `-set=>0` for the sake of code calling
-# through the Scope interface.  Call as `_set0($set)`.
-# Returns truthy of OK, falsy if not.
-# Better a readily-obvious crash than a subtle bug!
-sub _set0 {
-    $_[0] //= 0;    # Give the caller a default set
-    my $set = shift;
-    return false if defined($set) && $set ne '0' && $set ne '*';
-    return true;
-} #_set0()
 
 =head2 _find_here
 

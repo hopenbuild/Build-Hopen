@@ -5,6 +5,7 @@ use Data::Hopen::Base;
 
 our $VERSION = '0.000016'; # TRIAL
 
+use Data::Hopen::Scope qw(:default :internal);
 use parent 'Data::Hopen::Scope';
 use Class::Tiny {
     _content => sub { +{} },    # Our storage
@@ -44,18 +45,6 @@ Not used, but provided so you can use L<Data::Hopen/hnew> to make Scopes.
 
 # }}}1
 
-# Don't support -set, but permit `-set=>0` and `-set=>FIRST_ONLY` for the
-# sake of code calling # through the Scope interface.  Call as `_set0($set)`.
-# Returns truthy if OK, falsy if not.  May modify its argument.
-# Better a readily-obvious crash than a subtle bug!
-sub _set0 {
-    $_[0] //= 0;    # Give the caller a default set
-    $_[0] = 0 if Data::Hopen::Scope::is_first_only($_[0]);
-    my $set = shift;
-    return false if defined($set) && $set ne '0' && $set ne '*';
-    return true;
-} #_set0()
-
 =head2 put
 
 Add key-value pairs to this scope.  See L<Data::Hopen::Scope/put>.  In this
@@ -68,6 +57,7 @@ TODO add $set option once it's added to D::H::Scope::put().
 sub put {
     my $self = shift or croak 'Need an instance';
     croak "Got an odd number of parameters" if @_%2;
+    return $self unless @_;
     my %new = @_;
     @{$self->_content}{keys %new} = values %new;
     return $self;
@@ -82,8 +72,9 @@ Merge in values.  See L<Data::Hopen::Scope/merge>.
 sub merge {
     my $self = shift or croak 'Need an instance';
     croak "Got an odd number of parameters" if @_%2;
-    my %new = @_;
+    return unless @_;
 
+    my %new = @_;
     my $merger = $self->_merger;
     $self->_content($merger->merge($self->_content, \%new));
 

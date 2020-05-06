@@ -20,13 +20,15 @@ use Class::Tiny {
 };
 
 # Static exports
+use vars::i '@EXPORT_OK_PUBLIC' => [qw(is_first_only)];
 use vars::i {
     '@EXPORT' => [qw(FIRST_ONLY)],
-    '@EXPORT_OK' => [qw(is_first_only)],
+    '@EXPORT_OK' => [@EXPORT_OK_PUBLIC, qw(_set0)],
 };
 use vars::i '%EXPORT_TAGS' => {
     'default' => [@EXPORT],
-    'all' => [@EXPORT, @EXPORT_OK],
+    'all' => [@EXPORT, @EXPORT_OK_PUBLIC],
+    'internal' => [qw(_set0)],
 };
 
 my $_first_only = {};
@@ -395,6 +397,10 @@ chain.  Example usage:
 C<put> overwrites data in case of any conflicts.  See L</merge> if you
 want more control.
 
+C<put> may be called with no parameters, in which case it is a no-op.
+This is so you can say C<< $s->put(%foo) >> without first having to
+check whether C<%foo> is nonempty.
+
 TODO add C<$set> option.  TODO? add -deep option?
 
 =cut
@@ -464,6 +470,25 @@ sub is_first_only {
     ref $_[0] eq ref $_first_only &&
     refaddr $_[0] == refaddr $_first_only
 } #is_first_only()
+
+=head2 _set0
+
+For use only by subclasses.
+
+Don't support C<-set>, but permit C<< -set=>0 >> and C<< -set=>FIRST_ONLY >>
+for the sake of code calling through the Scope interface.  Call as
+C<set0($set)>>.  Returns truthy if OK, falsy if not.  May modify its argument.
+Better a readily-obvious crash than a subtle bug!
+
+=cut
+
+sub _set0 {
+    $_[0] //= 0;    # Give the caller a default set
+    $_[0] = 0 if Data::Hopen::Scope::is_first_only($_[0]);
+    my $set = shift;
+    return false if $set ne '0' && $set ne '*';
+    return true;
+} #_set0()
 
 1;
 __END__
