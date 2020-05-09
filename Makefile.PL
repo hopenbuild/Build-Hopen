@@ -112,8 +112,9 @@ README.md: @{[$VERSION_FROM]} Makefile.PL $make_readme_md
 README: @{[$VERSION_FROM]} Makefile.PL $make_readme_md
 \t"$secure_perl_path" "$make_readme_md" -i "\$<" -o "\$@" -f text --appveyor hopenbuild/Data-Hopen --travis hopenbuild/Data-Hopen
 
+# Update cpanfile, but if the dev dependencies aren't installed, it's OK.
 cpanfile: @{[$VERSION_FROM]} Makefile.PL $make_cpanfile MYMETA.json
-\t"$secure_perl_path" "$make_cpanfile"
+\t-"$secure_perl_path" "$make_cpanfile"
 
 all :: README.md README cpanfile
 dist :: README.md README cpanfile
@@ -295,6 +296,9 @@ my %opts = (
             develop => {
                 requires => {
                     'App::RewriteVersion' => '0',   # for perl-bump-version
+                    'CPAN::Meta' => '0',
+                    'File::Slurp' => '9999.26',
+                    'Module::CPANfile' => '0.9020', # for from_prereqs()
                     'Module::Metadata' => '1.000016',
                     'Test::Kwalitee' => '0',
                 },
