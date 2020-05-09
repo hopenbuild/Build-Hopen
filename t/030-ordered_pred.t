@@ -123,4 +123,3 @@ sub add_edge {
     #is($preds[0], 'b', 'First predecessor');
     #is($preds[1], 'd', 'Second predecessor');
 }
-
