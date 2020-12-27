@@ -6,7 +6,7 @@ use Data::Hopen;
 use strict;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000019';
+our $VERSION = '0.000020';
 
 # TODO if using exporter
 use parent 'Exporter';

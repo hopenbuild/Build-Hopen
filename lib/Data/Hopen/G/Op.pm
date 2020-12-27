@@ -4,7 +4,7 @@ use Data::Hopen;
 use strict;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000019';
+our $VERSION = '0.000020';
 
 use parent 'Data::Hopen::G::Node';
 use Class::Tiny;

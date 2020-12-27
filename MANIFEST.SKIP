@@ -1,5 +1,6 @@
 # WIP files
 ^lib.Data.Hopen.Util.MergeWithoutCloneBlessed\.pm
+^lib.Data.Hopen.Scope.Overrides\.pm
 ^t.005-merge-without-clone-blessed\.NOTYET
 
 # Miscellaneous

@@ -20,7 +20,6 @@ lib/Data/Hopen/Scope.pm
 lib/Data/Hopen/Scope/Environment.pm
 lib/Data/Hopen/Scope/Hash.pm
 lib/Data/Hopen/Scope/Inputs.pm
-lib/Data/Hopen/Scope/Overrides.pm
 lib/Data/Hopen/Util/Data.pm
 lib/Data/Hopen/Util/Filename.pm
 lib/Data/Hopen/Util/NameSet.pm
