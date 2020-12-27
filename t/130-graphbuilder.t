@@ -5,7 +5,7 @@ use HopenTest;
 use Test::Deep::NoTest;     # NoTest since I am using eq_deeply directly
 use Test::Fatal;
 
-use Data::Hopen qw(:v);
+use Data::Hopen qw(:v hnew);
 use Data::Hopen::G::DAG;
 use Data::Hopen::G::GraphBuilder;
 use Data::Hopen::G::NoOp;
@@ -16,10 +16,14 @@ diag "Testing Data::Hopen::G::GraphBuilder from $INC{'Data/Hopen/G/GraphBuilder.
 # For unique node names
 my $nodeid = 42;
 
+sub newnode {
+    return Data::Hopen::G::NoOp->new(name => $_[0] // ('N' . $nodeid++));
+}
+
 # a builder
 sub next {
     my $graphbuilder = shift;
-    return Data::Hopen::G::NoOp->new(name => 'N' . $nodeid++);
+    return newnode($_[0]);
 }
 
 # Make it a builder
@@ -32,123 +36,99 @@ my $newrefaddr = refaddr \&next;
 is(ref \&next, 'CODE', 'next() is a sub after wrapping');
 cmp_ok($oldrefaddr, ne => $newrefaddr, 'make_GraphBuilder changed next()');
 
+# A no-op builder
+sub nopbuild { }
+make_GraphBuilder 'nopbuild';
+
+# A would-be builder that does not return a blessed reference
+sub plainrefbuild { [] }
+make_GraphBuilder 'plainrefbuild';
+
+# A would-be builder that does not return a node
+package Foo {
+    use Class::Tiny;
+}
+
+sub nonnodebuild { return Foo->new; }
+
 sub main {
     my $dag = Data::Hopen::G::DAG->new;
     isa_ok($dag, 'Data::Hopen::G::DAG');
     ok($dag->empty, 'DAG is initially empty');
     cmp_ok($dag->_graph->vertices, '==', 1, 'DAG initially has 1 vertex');
 
-    my $builder = $dag->main::next;
+    my $builder = $dag->main::next('node1');
     isa_ok($builder, 'Data::Hopen::G::GraphBuilder');
-    my $builder2 = $builder->main::next;
+    my $builder2 = $builder->main::next('node2');
     isa_ok($builder2, 'Data::Hopen::G::GraphBuilder');
     cmp_ok(refaddr $builder, '==', refaddr $builder2, 'Same builder instance');
+    my $op2 = $builder->node;
+
+    $builder->main::nopbuild;
+    my $op3 = $builder->node;
+    cmp_ok(refaddr $op3, '==', refaddr $op2, 'NOP builder leaves node the same');
+
+    $builder->main::plainrefbuild;
+    my $op4 = $builder->node;
+    cmp_ok(refaddr $op4, '==', refaddr $op2, 'plain-ref builder leaves node the same');
+
+    $builder->main::nonnodebuild;
+    my $op5 = $builder->node;
+    cmp_ok(refaddr $op5, '==', refaddr $op2, 'non-node builder leaves node the same');
+
+    my $n3 = newnode('node3');
+    $builder->add($n3);
+    my $op6 = $builder->node;
+    cmp_ok(refaddr $op6, '==', refaddr $op2, 'builder->add() leaves node the same');
+
+    my $retval = $builder->default_goal;
+    ok(!defined $retval, 'default_goal returns undef');
+    my $n1 = $dag->node_by_name('node1');
+    ok($n1, 'Got node1 by name');
+    my $n2 = $dag->node_by_name('node2');
+    ok($n2, 'Got node2 by name');
+    my $goal = $dag->default_goal;
+    ok($dag->_graph->has_edge($n1, $n2), 'edge node1->node2 exists');
+    ok($dag->_graph->has_edge($n2, $goal), 'edge node2->goal exists');
+    ok(!$dag->_graph->has_edge($n1, $goal), 'edge node1->goal does not exist');
+
+    $builder->node($n3);
+    $builder->default_goal;
+    ok($dag->_graph->has_edge($n3, $goal), 'edge node3->goal exists');
+
+    my $n4 = newnode('node4');
+    $builder->node($n4);
+    $builder->goal('all');
+    ok($dag->_graph->has_edge($n4, $goal), 'edge node3->goal("all") exists');
+
+    # A graph with a default not named 'all'
+    $dag = hnew DAG => 'dag';
+    my $defgoalname = 'leetness';
+    my $defgoal = $dag->goal($defgoalname);
+    cmp_ok(refaddr($dag->default_goal), '==', refaddr($defgoal), 'Default goal does not have to be "all"');
+
+    $builder = $dag->main::next('whatever');
+    $builder->default_goal;
+    my $node_whatever = $dag->node_by_name('whatever');
+    ok($dag->_graph->has_edge($node_whatever, $defgoal), 'edge node->default goal exists');
+
+} #main
+
+sub failures {
+    my $dag = Data::Hopen::G::DAG->new;
+    my $builder = Data::Hopen::G::GraphBuilder->new(dag => $dag);
+
+    like( exception { make_GraphBuilder; }, qr/Need the name/, 'make_GraphBuilder without name');
+    like( exception { Data::Hopen::G::GraphBuilder::_wrapper() }, qr/Need a function/, 'GraphBuilder _wrapper() without function');
+    like( exception { Data::Hopen::G::GraphBuilder::_wrapper('foo') }, qr/Need a parameter/, 'GraphBuilder _wrapper() without parameter');
+    like( exception { Data::Hopen::G::GraphBuilder::_wrapper('foo', []) }, qr/must be a DAG/, 'GraphBuilder _wrapper() without DAG');
+
+
 }
+
+# === Run ===
 
 main;
+failures;
 
 done_testing;
-
-__END__
-my @goals;
-foreach my $goalname (qw(all clean)) {
-    my $g1 = $dag->goal($goalname);
-    push @goals, $g1;
-    isa_ok($g1, 'Data::Hopen::G::Goal', 'DAG::goal()');
-    is($g1->name, $goalname, 'DAG::goal() sets goal name');
-    ok($dag->_graph->has_edge($g1, $dag->_final), 'DAG::goal() adds goal->final edge');
-}
-
-ok(!$dag->empty, 'DAG is not empty after adding goals');
-cmp_ok($dag->_graph->vertices, '>', 1, 'DAG has >1 vertex after adding goals');
-ok($dag->default_goal, 'DAG::goal() sets default_goal');
-is($dag->default_goal->name, 'all', 'First call to DAG::goal() sets default goal name');
-
-# add()
-my $op = Data::Hopen::G::NoOp->new(name => 'some operation');
-{
-    local $VERBOSE = 3;     # for coverage of the hlog
-    $dag->add($op);
-}
-ok($dag->_graph->has_vertex($op), 'add() adds node');
-cmp_ok($dag->_graph->get_vertex_count($op), '==', 1, 'add() initial count 1');
-$dag->add($op);
-cmp_ok($dag->_graph->get_vertex_count($op), '==', 1, 'add() count still 1');
-
-# init()
-
-our @results;   # lexical visible in the following package
-package MY::AppendOp {
-    use parent 'Data::Hopen::G::Op';
-    use Class::Tiny;
-    sub _run {
-        push @results, (shift)->name;
-        return {};  # Must return a hashref
-    }
-} #MY::AppendOp
-
-# Make a dummy DAG so it will run - what we care about is the init graph
-$dag = Data::Hopen::G::DAG->new(name=>'dag_with_init');
-my $goal = $dag->goal('some goal');
-{
-    local $VERBOSE = 1;     # for coverage
-    $dag->connect(Data::Hopen::G::NoOp->new, $goal);
-}
-
-my @ops = map { MY::AppendOp->new(name => "$_") } qw(1 2 3);
-cmp_ok($dag->_init_graph->vertices, '==', 1, 'Init graph initially has 1 vertex');
-$dag->init($ops[0]);
-cmp_ok($dag->_init_graph->vertices, '==', 2, 'init() adds a vertex to the init graph');
-ok($dag->_init_graph->has_vertex($ops[0]), 'init() adds node');
-cmp_ok($dag->_init_graph->get_vertex_count($ops[0]), '==', 1, 'init() initial count 1');
-$dag->init($ops[0]);
-cmp_ok($dag->_init_graph->get_vertex_count($ops[0]), '==', 1, 'init() count still 1');
-
-$dag->init($ops[1]);
-$dag->init($ops[2], true);
-cmp_ok($dag->_init_graph->vertices, '==', 4,
-    'right number of vertices in the init graph before running');
-
-@results=();
-$dag->run;      # Fills in @results
-
-# Check the results.  Ops 1 and 2 are added as peers after the initial
-# first node, so they can run in any order.  Op 3 is added as the first node
-# ($dag->init(..., true)), so will always come before the other two.
-ok( eq_deeply(\@results, [3,1,2]) ||
-    eq_deeply(\@results, [3,2,1]),
-    'Init operations ran in the expected order' );
-
-# Make a cycle in the init graph
-$dag->_init_graph->add_edge($ops[$_], $ops[2]) foreach (0, 1);
-like( exception { $dag->run }, qr/Initializations contain a cycle/,
-    'Detects cycles in init graph');
-
-# Extra tests for coverage
-
-# Anon dag
-$dag = Data::Hopen::G::DAG->new();
-isa_ok($dag, 'Data::Hopen::G::DAG');
-like($dag->name, qr/DAG.*\d/, 'Anon dag gets an autogenerated name');
-
-# Invalid invocations
-like exception { Data::Hopen::G::DAG::goal(); }, qr/Need an instance/,
-    'goal called directly throws';
-like exception { Data::Hopen::G::DAG->goal(); }, qr/Need a goal name/,
-    'goal called without name throws';
-like exception { Data::Hopen::G::DAG::connect(); }, qr/Need an instance/,
-    'connect called directly throws';
-like exception { Data::Hopen::G::DAG::add(); }, qr/Missing/,
-    'add called directly throws';
-like exception { Data::Hopen::G::DAG->add(); }, qr/Missing/,
-    'add called without node throws';
-like exception { Data::Hopen::G::DAG::init(); }, qr/Need an instance/,
-    'init called directly throws';
-like exception { Data::Hopen::G::DAG->init(); }, qr/Need an op/,
-    'init called without op throws';
-like exception { Data::Hopen::G::DAG::empty(); }, qr/Need an instance/,
-    'empty called directly throws';
-like exception { Data::Hopen::G::DAG::BUILD(); }, qr/Need an instance/,
-    'BUILD called directly throws';
-
-done_testing();
