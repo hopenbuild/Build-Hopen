@@ -70,6 +70,9 @@ Not exported by default, except as noted.
 Set to a positive integer to get debug output on stderr from hopen's internals.
 The higher the value, the more output you are likely to get.  See also L</hlog>.
 
+The initial value is taken from environment variable C<HOPEN_VERBOSITY>,
+and defaults to 0 if that variable is not present.
+
 =head2 $QUIET
 
 Set to truthy to suppress output.  Quiet overrides L</$VERBOSE>.
@@ -78,7 +81,7 @@ Set to truthy to suppress output.  Quiet overrides L</$VERBOSE>.
 
 # }}}1
 
-our $VERBOSE;   BEGIN { $VERBOSE = 0; }
+use vars::i '$VERBOSE' => 0+ ($ENV{HOPEN_VERBOSITY} // '0');
 our $QUIET;     BEGIN { $QUIET = false; }
 
 =head1 FUNCTIONS
