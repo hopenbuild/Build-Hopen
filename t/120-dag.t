@@ -9,6 +9,7 @@ use Data::Hopen qw(:v);
 use Data::Hopen::G::DAG;
 use Data::Hopen::G::Op;
 use Data::Hopen::G::NoOp;
+use Scalar::Util qw(refaddr);
 
 diag "Testing Data::Hopen::G::DAG from $INC{'Data/Hopen/G/DAG.pm'}";
 
@@ -38,7 +39,8 @@ ok($dag->default_goal, 'DAG::goal() sets default_goal');
 is($dag->default_goal->name, 'all', 'First call to DAG::goal() sets default goal name');
 
 # add()
-my $op = Data::Hopen::G::NoOp->new(name => 'some operation');
+my $name = 'some operation';
+my $op = Data::Hopen::G::NoOp->new(name => $name);
 {
     local $VERBOSE = 3;     # for coverage of the hlog
     $dag->add($op);
@@ -47,6 +49,29 @@ ok($dag->_graph->has_vertex($op), 'add() adds node');
 cmp_ok($dag->_graph->get_vertex_count($op), '==', 1, 'add() initial count 1');
 $dag->add($op);
 cmp_ok($dag->_graph->get_vertex_count($op), '==', 1, 'add() count still 1');
+
+ok(!defined($dag->node_by_name('Nonexistent node!')), 'node_by_name returns undef for nonexistent node');
+my $got_op = $dag->node_by_name($name);
+ok($got_op, 'node_by_name returned a value');
+cmp_ok(refaddr($got_op), '==', refaddr($op), 'node_by_name returned the correct value');
+
+my $name2 = 'different';
+my $op2 = Data::Hopen::G::NoOp->new(name => $name2);
+$dag->add($op2);
+my $got_op2 = $dag->node_by_name($name2);
+cmp_ok(refaddr($got_op2), '==', refaddr($op2), 'node_by_name returned the correct value for a different name');
+
+# add a duplicate
+my $vcount = $dag->_graph->vertices;
+my $op3 = $dag->add($op);
+cmp_ok(refaddr($op3), '==', refaddr($op), 'add(same name) returned the existing node');
+cmp_ok($dag->_graph->vertices, '==', $vcount, 'add(existing) did not change vertex count');
+
+# add duplicate name
+my $op4 = Data::Hopen::G::NoOp->new(name => $name);
+my $op5 = $dag->add($op4);
+cmp_ok(refaddr($op5), '==', refaddr($op), 'add(same name) returned the existing node');
+cmp_ok($dag->_graph->vertices, '==', $vcount, 'add(same name) did not change vertex count');
 
 # init()
 

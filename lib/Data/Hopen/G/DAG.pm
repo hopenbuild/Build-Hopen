@@ -12,8 +12,8 @@ use Class::Tiny {
     winner => undef,
 
     # Private attributes with simple defaults
-    #_node_by_name => sub { +{} },   # map from node names to nodes in either
-    #                                # _init_graph or _graph
+    _node_by_name => sub { +{} },   # map from node names to nodes in either
+                                    # _init_graph or _graph
 
     # Private attributes - initialized by BUILD()
     _graph  => undef,   # L<Data::Hopen::OrderedPredecessorGraph> instance
@@ -122,6 +122,17 @@ The first node to be run in _init_graph.
 =cut
 
 # }}}1
+
+=head2 _record_node_name
+
+If a node has a custom name, save it in C<_node_by_name>
+
+=cut
+
+sub _record_node_name {
+    my $self = shift;
+    do { $self->_node_by_name->{$_->name} = $_ if $_->has_custom_name } foreach (@_);
+}
 
 =head2 _run
 
@@ -326,7 +337,7 @@ sub goal {
     my $name = shift or croak 'Need a goal name';
     my $goal = Data::Hopen::G::Goal->new(name => $name);
     $self->_graph->add_vertex($goal);
-    #$self->_node_by_name->{$name} = $goal;
+    $self->_node_by_name->{$name} = $goal;
     $self->_graph->add_edge($goal, $self->_final);
     $self->default_goal($goal) unless $self->default_goal;
     push @{$self->goals}, $goal;
@@ -392,7 +403,7 @@ sub connect {
 
     # Add it to the graph (idempotent)
     $self->_graph->add_edge($op1, $op2);
-    # $self->_node_by_name->{$_->name} = $_ foreach ($op1, $op2);
+    $self->_record_node_name($op1, $op2);
 
     # Save the DHG::Link as an edge attribute (not idempotent!)
     if($link) {
@@ -406,8 +417,8 @@ sub connect {
 
 =head2 add
 
-Add a regular node to the graph.  An attempt to add the same node twice will be
-ignored.  Usage:
+Add a regular node to the graph.  An attempt to add the same node twice, or to
+add the same name twice, will be ignored.  Usage:
 
     my $node = Data::Hopen::G::Op->new(name=>"whatever");
     $dag->add($node);
@@ -418,11 +429,19 @@ Returns the node, for the sake of chaining.
 
 sub add {
     my ($self, undef, $node) = parameters('self', ['node'], @_);
-    return if $self->_graph->has_vertex($node);
+
+    # Return the node if it is already there
+    return $node if $self->_graph->has_vertex($node);
+    if ($_ = $self->node_by_name($node->name)) {
+        cluck "Ignoring attempt to add duplicate node named ``@{[$node->name]}''";
+        return $_;
+    }
+
+    # Add the node
     hlog { __PACKAGE__, $self->name, 'adding', Dumper($node) } 2;
 
     $self->_graph->add_vertex($node);
-    #$self->_node_by_name->{$node->name} = $node if $node->name;
+    $self->_record_node_name($node);
 
     return $node;
 } #add()
@@ -451,7 +470,7 @@ sub init {
     return if $self->_init_graph->has_vertex($op);
 
     $self->_init_graph->add_vertex($op);
-    #$self->_node_by_name->{$op->name} = $op;
+    $self->_record_node_name($op);
 
     if($first) {    # $op becomes the new _init_first node
         $self->_init_graph->add_edge($op, $self->_init_first);
@@ -480,6 +499,17 @@ sub empty {
         # We don't check the _init_graph since empty() is intended
         # for use by hopen files, not toolsets.
 } #empty()
+
+=head2 node_by_name
+
+Returns the node with the given name, or undef.
+
+=cut
+
+sub node_by_name {
+    my ($self, $name) = @_;
+    return $self->_node_by_name->{$name}
+}
 
 =head1 OTHER
 
