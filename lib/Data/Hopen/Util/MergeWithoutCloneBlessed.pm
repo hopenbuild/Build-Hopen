@@ -6,7 +6,7 @@ use warnings;
 use 5.014;
 use Carp qw(croak);
 
-our $VERSION = '0.000018';
+our $VERSION = '0.000019';
 
 use base 'Hash::Merge';     # since `base` is what Hash::Merge uses
 use Clone::Choose 0.008;    # also from Hash::Merge
