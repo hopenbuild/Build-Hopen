@@ -37,6 +37,7 @@ use Data::Hopen::Util::Data qw(forward_opts);
 use Data::Hopen::OrderedPredecessorGraph;
 use Getargs::Mixed; # parameters, which doesn't permit undef
 use Hash::Merge;
+use List::Util qw(any);
 use Regexp::Assemble;
 use Scalar::Util qw(refaddr);
 use Storable ();
@@ -335,12 +336,24 @@ The first call to C<goal()> also sets L</default_goal>.
 sub goal {
     my $self = shift or croak 'Need an instance';
     my $name = shift or croak 'Need a goal name';
+
+    # Check for an existing goal
+    if(my $existing = $self->node_by_name($name)) {
+        die "Cannot add goal ``$name'' with the same name as an existing non-goal"
+            unless any { $_->name eq $name } @{$self->goals};
+        return $existing;
+    }
+
+    hlog { __PACKAGE__, $self->name, 'adding goal', $name } 2;
+
+    # Add the goal
     my $goal = Data::Hopen::G::Goal->new(name => $name);
-    $self->_graph->add_vertex($goal);
-    $self->_node_by_name->{$name} = $goal;
+    $self->add($goal);
+
     $self->_graph->add_edge($goal, $self->_final);
     $self->default_goal($goal) unless $self->default_goal;
     push @{$self->goals}, $goal;
+
     return $goal;
 } #goal()
 

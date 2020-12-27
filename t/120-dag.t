@@ -37,6 +37,8 @@ ok(!$dag->empty, 'DAG is not empty after adding goals');
 cmp_ok($dag->_graph->vertices, '>', 1, 'DAG has >1 vertex after adding goals');
 ok($dag->default_goal, 'DAG::goal() sets default_goal');
 is($dag->default_goal->name, 'all', 'First call to DAG::goal() sets default goal name');
+cmp_ok(refaddr($dag->goal('all')), '==', refaddr($dag->default_goal),
+    'default_goal is accessible by name');
 
 # add()
 my $name = 'some operation';
@@ -49,6 +51,9 @@ ok($dag->_graph->has_vertex($op), 'add() adds node');
 cmp_ok($dag->_graph->get_vertex_count($op), '==', 1, 'add() initial count 1');
 $dag->add($op);
 cmp_ok($dag->_graph->get_vertex_count($op), '==', 1, 'add() count still 1');
+
+like( exception {$dag->goal($name)}, qr/same name.+non-goal/,
+    'goal() rejects goal with the same name as existing node');
 
 ok(!defined($dag->node_by_name('Nonexistent node!')), 'node_by_name returns undef for nonexistent node');
 my $got_op = $dag->node_by_name($name);

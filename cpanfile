@@ -11,6 +11,7 @@ requires 'Getopt::Long', '2.5';
 requires 'Graph', '0.9704';
 requires 'Hash::Merge', '0.299';
 requires 'Import::Into';
+requires 'List::Util', '1.43';
 requires 'Path::Class', '0.37';
 requires 'Regexp::Assemble', '0.38';
 requires 'Scalar::Util';

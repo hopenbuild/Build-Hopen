@@ -237,6 +237,7 @@ my %opts = (
         'Getopt::Long' => '2.5',    # For long option bugfix
         'Graph' => '0.9704',        # For latest multiedged support
         ## 'List::MoreUtils' => '0.428',
+        'List::Util' => '1.43',
 
         # 'Module::Find' => '0.12', # For bugfixes
                                     # - Use for finding plugins to load.
