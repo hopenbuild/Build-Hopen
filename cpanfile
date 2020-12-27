@@ -51,6 +51,7 @@ on test => sub {
     requires 'Test::Deep', '0.098';
     requires 'Test::Fatal', '0.014';
     requires 'Test::More';
+    requires 'Test::UseAllModules', '0.17';
     requires 'Test::Warn', '0.35';
     requires 'rlib';
 };

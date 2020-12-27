@@ -138,6 +138,8 @@ actually_uninstall_from_sitedirs ::
 actually_uninstall_from_vendordirs ::
 \t-\$(ACTUALLY_UNINSTALL) "\$(VENDORARCHEXP)/auto/\$(FULLEXT)/.packlist"
 
+cover: all
+\tHARNESS_OPTIONS=j4 cover -test
 EOT
 
     } #postamble()
@@ -192,6 +194,7 @@ my %opts = (
         'Test::Fatal' => '0.014',
         'Test::More' => '0',
         # Test::TempDir::Tiny?  If so, remove Test::Directory dependency?
+        'Test::UseAllModules' => '0.17',
         'Test::Warn' => '0.35',     # for metadata
     },
     PREREQ_PM => {
