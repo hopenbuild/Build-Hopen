@@ -229,10 +229,76 @@ package Builders {
     } #Builders::run
 }
 
+package To {
+    use Data::Hopen qw(hnew);
+    use Data::Hopen::G::GraphBuilder;
+    use HopenTest;
+    use Scalar::Util qw(refaddr);
+
+    sub fanout {
+        my $builder = shift;
+        return +{ complete => [map { main::newnode() } 0..3]};
+    }
+    make_GraphBuilder 'fanout';
+
+    sub run {
+
+        # Test 1-1 connection
+
+        my $dag = hnew DAG => 'dag1';
+        my $builder = hnew GraphBuilder => 'builder1a', dag => $dag;
+        my $builder2 = hnew GraphBuilder => 'builder1b', dag => $dag;
+        $builder->main::next('node1');
+        cmp_ok(@{$builder->nodes}, '==', 1, 'One current node after newnode');
+        $builder2->main::next('node2');
+        cmp_ok(@{$builder2->nodes}, '==', 1, 'One current node after newnode');
+        my $node1 = main::get_only_node($builder);
+        my $node2 = main::get_only_node($builder2);
+        isa_ok($node1, 'Data::Hopen::G::NoOp');
+        isa_ok($node2, 'Data::Hopen::G::NoOp');
+
+        $builder->to($builder2);
+        my @succs = $dag->_graph->successors($node1);
+        cmp_ok(@succs, '==', 1, 'After to(), a single successor');
+        cmp_ok(refaddr($succs[0]), '==', refaddr($node2), 'Correct successor');
+
+        # Test 4-4 connection
+
+        $dag = hnew DAG => 'dag2';
+        $builder = hnew GraphBuilder => 'builder2a', dag => $dag;
+        $builder2 = hnew GraphBuilder => 'builder2b', dag => $dag;
+
+        $builder->main::next('2a');
+        $builder->To::fanout;
+        my @nodes1 = @{$builder->nodes};
+        cmp_ok(@nodes1, '==', 4, 'Four current nodes after fanout');
+
+        $builder2->main::next('2b');
+        $builder2->To::fanout;
+        my @nodes2 = @{$builder2->nodes};
+        cmp_ok(@nodes2, '==', 4, 'Four current nodes after fanout');
+
+        for my $node (@nodes1, @nodes2) {
+            cmp_ok($dag->_graph->successors($node), '==', 0,
+                "Node @{[$node->name]} has no successors before to()");
+        }
+        $builder->to($builder2);
+
+        for my $node1 (@nodes1) {
+            for my $node2 (@nodes2) {
+                ok($dag->_graph->has_edge($node1, $node2),
+                "Node @{[$node1->name]} connects to node @{[$node2->name]} after to()");
+            }
+        }
+
+    } #To::run()
+}
+
 # === Run ===
 
 main;
 failures;
 Builders::run;
+To::run();
 
 done_testing;

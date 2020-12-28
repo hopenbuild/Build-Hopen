@@ -2,7 +2,6 @@ Revision history for Data-Hopen
 
 0.000020    ??
     - Breaking changes in Data::Hopen::G::GraphBuilder:
-        - Remove to()
         - Replace scalar node property with arrayref nodes property
         - goal/default_goal(): connect all nodes to the goal
 

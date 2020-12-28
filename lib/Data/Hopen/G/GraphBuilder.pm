@@ -124,6 +124,42 @@ sub goal {
         # MY.hopen.pl, which would be a Bad Thing.
 } #goal()
 
+=head2 to
+
+Connect one set of node(s) to another, where both sets are wrapped in
+C<GraphBuilder>s.  Each source node is connected to each destination node
+(the same as L</complete>, below).
+
+Usage:
+
+    $builder_1->to($builder_2);
+        # Now each node in @{$builder_1->nodes} has an edge to each
+        # node in @{$builder_2->nodes}
+
+Returns C<undef>, because chaining would be ambiguous.  For example,
+in the snippet above, would the chain continue from C<$builder_1> or
+C<$builder_2>?
+
+Does not change the state of either GraphBuilder.
+
+=cut
+
+sub to {
+    my ($self, %args) = parameters('self', [qw(dest)], @_);
+    croak 'Destination is not a ' . __PACKAGE__
+        unless $args{dest}->DOES(__PACKAGE__);
+    croak 'Cannot connect nodes from different graphs'
+        if refaddr($self->dag) != refaddr($args{dest}->dag);
+
+    for my $srcnode (@{$self->nodes}) {
+        for my $destnode (@{$args{dest}->nodes}) {
+            $self->dag->connect($srcnode, $destnode);
+        }
+    }
+
+    return undef;
+} #to()
+
 =head1 STATIC FUNCTIONS
 
 =head2 make_GraphBuilder
