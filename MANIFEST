@@ -55,6 +55,7 @@ t/122-dag-visitor.t
 t/123-dag-warnings.t
 t/124-dag-merge-node-inputs.t
 t/125-dag-links.t
+t/130-graphbuilder.t
 t/998-sig-die.t
 t/999-extras-for-coverage.t
 t/lib/HopenTest.pm

@@ -182,12 +182,19 @@ mapping+arrayref pairs are no supported.  Possible C<mapping> values are:
 =item parallel
 
 Each of the current node(s) is linked to the corresponding one of the
-new node(s).  The graph gets parallel edges added, whence the name
+new node(s).  The graph gets parallel edges added, whence the name.
 
-=item fanout
+This is only valid if the number of current nodes matches the number of
+new nodes, or if the number of current nodes is zero.
+
+=item complete
 
 Each of the current node(s) is linked to B<all> of the new node(s).  For
-a single input node, this is 1-to-many fanout, whence the name.
+a single current node, this is 1-to-many fanout; for a single new node, this
+is many-to-1 fan-in.
+
+This is valid regardless of the number of current nodes.  For example, the
+number of current nodes may be zero.
 
 =back
 
@@ -239,33 +246,35 @@ sub _wrapper {
             die "At this time, I can only handle one type of return.  Sorry!  (got @keys)";
         }
 
-        my @vals = @{$worker_retval->{$keys[0]}};
-        die "Worker provided no nodes" unless @vals;
+        my @newnodes = @{$worker_retval->{$keys[0]}};
+        die "Worker provided no nodes" unless @newnodes;
+        my $ncurrnodes = @{$self->nodes};
 
-        if($keys[0] eq 'parallel') {
-            if(@{$self->nodes} != @vals) {
-                die "For parallel, number @{[scalar @vals]} of new nodes" .
-                    " must match number @{[scalar @{$self->nodes}]} of" .
-                    " existing nodes.";
+        if($keys[0] eq 'parallel') {                                # 1-to-1 x N
+            if($ncurrnodes != 0 && $ncurrnodes != @newnodes) {
+                die "For parallel, number @{[scalar @newnodes]} of new nodes" .
+                    " must match number $ncurrnodes of existing nodes.";
             }
-            for my $idx (0..$#vals) {
-                my $destnode = $self->dag->add($vals[$idx]);
+            for my $idx (0..$#newnodes) {
+                my $destnode = $self->dag->add($newnodes[$idx]);
                 $self->dag->connect($self->nodes->[$idx], $destnode);
             }
 
-            $self->nodes(\@vals);
+            $self->nodes(\@newnodes);
 
-        } elsif($keys[0] eq 'fanout') {
+        } elsif($keys[0] eq 'complete') {                           # many-to-many
             my @srces = @{$self->nodes};    # for convenience
 
-            for my $destidx (0..$#vals) {
-                my $destnode = $self->dag->add($vals[$destidx]);
+            for my $destidx (0..$#newnodes) {
+                my $destnode = $self->dag->add($newnodes[$destidx]);
                 for my $srcidx (0..$#srces) {
+                    # srces must be the inner loop because there may not be
+                    # any srces.
                     $self->dag->connect($srces[$srcidx], $destnode);
                 }
             }
 
-            $self->nodes(\@vals);
+            $self->nodes(\@newnodes);
 
         } else {
             die "I don't understand requested relationship ``$keys[0]''";

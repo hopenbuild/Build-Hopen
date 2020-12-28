@@ -149,9 +149,9 @@ package Builders {
         return +{ parallel => [map { main::newnode() } 0..$#{$builder->nodes}]};
     }
 
-    sub retfanout {
+    sub retcomplete {
         my $builder = shift;
-        return +{ fanout => [map { main::newnode() } 0..3]};
+        return +{ complete => [map { main::newnode() } 0..3]};
     }
 
     sub retunknownrel { return +{ unsupported_relationship => [1] } }
@@ -163,13 +163,18 @@ package Builders {
     }
 
     sub retmultiple {
-        return +{ parallel => [1], fanout => [1]};
+        return +{ parallel => [1], complete => [1]};
+    }
+
+    sub retcomplete1 {
+        my $builder = shift;
+        return +{ complete => [main::newnode()]};
     }
 
     make_GraphBuilder foreach qw(retundef retfalsy rettruthy retarray
-                                    retnode retparallel retfanout
+                                    retnode retparallel retcomplete
                                     retunknownrel retnonodes retwrongparallel
-                                    retmultiple);
+                                    retmultiple retcomplete1);
 
     sub run {
         my $dag1 = hnew DAG => 'dag1';
@@ -196,16 +201,16 @@ package Builders {
         my $name = 'retnode1';
         $builder->Builders::retnode($name);
         cmp_ok(@{$builder->nodes}, '==', 1, 'One current node after retnode');
-        $builder->Builders::retfanout;
-        cmp_ok(@{$builder->nodes}, '==', 4, 'Four current nodes after retfanout');
-        my @node1succ = $builder->dag->_graph->all_successors(
+        $builder->Builders::retcomplete;
+        cmp_ok(@{$builder->nodes}, '==', 4, 'Four current nodes after retcomplete');
+        my @node1succ = $builder->dag->_graph->successors(
             $builder->dag->node_by_name($name));
-        cmp_ok(@node1succ, '==', 4, 'Four successors after retfanout');
+        cmp_ok(@node1succ, '==', 4, 'Four successors after retcomplete');
 
         $builder->Builders::retparallel;
         cmp_ok(@{$builder->nodes}, '==', 4, 'Four current nodes after retparallel');
         foreach (@node1succ) {
-            cmp_ok($builder->dag->_graph->all_successors($_), '==', 1,
+            cmp_ok($builder->dag->_graph->successors($_), '==', 1,
                 "Node @{[$_->name]} has one successor");
         }
 
@@ -214,6 +219,11 @@ package Builders {
 
         like( exception { $builder->Builders::retmultiple },
             qr/one type of return/, 'multiple-key hashref rejected' );
+
+        $builder->Builders::retcomplete1;
+        cmp_ok(@{$builder->nodes}, '==', 1, 'One current node after retcomplete1');
+        my @preds = $builder->dag->_graph->predecessors($builder->nodes->[0]);
+        cmp_ok(@preds, '==', 4, 'current node after retcomplete1 has four predecessors');
 
 
     } #Builders::run
