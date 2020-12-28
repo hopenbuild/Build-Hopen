@@ -34,7 +34,7 @@ make_GraphBuilder 'next';
 my $newrefaddr = refaddr \&next;
 
 is(ref \&next, 'CODE', 'next() is a sub after wrapping');
-cmp_ok($oldrefaddr, ne => $newrefaddr, 'make_GraphBuilder changed next()');
+cmp_ok($oldrefaddr, '!=', $newrefaddr, 'make_GraphBuilder changed next()');
 
 # A no-op builder
 sub nopbuild { }
@@ -48,8 +48,14 @@ make_GraphBuilder 'plainrefbuild';
 package Foo {
     use Class::Tiny;
 }
-
 sub nonnodebuild { return Foo->new; }
+
+sub get_only_node {
+    my $builder = shift;
+    is(ref $builder->nodes, 'ARRAY', 'builder->nodes is an arrayref');
+    cmp_ok(@{$builder->nodes}, '==', 1, 'nodes has one element');
+    return $builder->nodes->[0];
+}
 
 sub main {
     my $dag = Data::Hopen::G::DAG->new;
@@ -62,23 +68,23 @@ sub main {
     my $builder2 = $builder->main::next('node2');
     isa_ok($builder2, 'Data::Hopen::G::GraphBuilder');
     cmp_ok(refaddr $builder, '==', refaddr $builder2, 'Same builder instance');
-    my $op2 = $builder->node;
+    my $op2 = get_only_node($builder);
 
     $builder->main::nopbuild;
-    my $op3 = $builder->node;
+    my $op3 = get_only_node($builder);
     cmp_ok(refaddr $op3, '==', refaddr $op2, 'NOP builder leaves node the same');
 
     $builder->main::plainrefbuild;
-    my $op4 = $builder->node;
+    my $op4 = get_only_node($builder);
     cmp_ok(refaddr $op4, '==', refaddr $op2, 'plain-ref builder leaves node the same');
 
     $builder->main::nonnodebuild;
-    my $op5 = $builder->node;
+    my $op5 = get_only_node($builder);
     cmp_ok(refaddr $op5, '==', refaddr $op2, 'non-node builder leaves node the same');
 
     my $n3 = newnode('node3');
     $builder->add($n3);
-    my $op6 = $builder->node;
+    my $op6 = get_only_node($builder);
     cmp_ok(refaddr $op6, '==', refaddr $op2, 'builder->add() leaves node the same');
 
     my $retval = $builder->default_goal;
@@ -122,13 +128,65 @@ sub failures {
     like( exception { Data::Hopen::G::GraphBuilder::_wrapper() }, qr/Need a function/, 'GraphBuilder _wrapper() without function');
     like( exception { Data::Hopen::G::GraphBuilder::_wrapper('foo') }, qr/Need a parameter/, 'GraphBuilder _wrapper() without parameter');
     like( exception { Data::Hopen::G::GraphBuilder::_wrapper('foo', []) }, qr/must be a DAG/, 'GraphBuilder _wrapper() without DAG');
+}
 
+# Test different return values of builder functions
+package Builders {
+    use Test::More;
+    use Data::Hopen qw(hnew);
+    use Data::Hopen::Base;
+    use Data::Hopen::G::DAG;
+    use Data::Hopen::G::GraphBuilder;
 
+    sub retundef { return undef }
+    sub retfalsy { return 0 }
+    sub rettruthy { return 42 }
+    sub retnode { goto &main::newnode }
+
+    sub retparallel {
+        my $builder = shift;
+        return +{ parallel => [map { main::newnode() } 0..$#{$builder->nodes}]};
+    }
+
+    sub retfanout {
+        my $builder = shift;
+        return +{ fanout => [map { main::newnode() } 0..3]};
+    }
+
+    make_GraphBuilder foreach qw(retundef retfalsy rettruthy retnode retparallel retfanout);
+
+    sub run {
+        my $dag1 = hnew DAG => 'dag1';
+        my $builder = hnew GraphBuilder => 'builder1', dag => $dag1;
+        cmp_ok(@{$builder->nodes}, '==', 0, 'No current nodes in new builder');
+        $builder->__PACKAGE__::retundef;
+        cmp_ok(@{$builder->nodes}, '==', 0, 'No current nodes after retundef');
+        $builder->__PACKAGE__::retfalsy;
+        cmp_ok(@{$builder->nodes}, '==', 0, 'No current nodes after retfalsy');
+
+        like( exception { $builder->__PACKAGE__::rettruthy },
+            qr/did not return a reference/, 'truthy non-reference rejected' );
+
+        $builder->__PACKAGE__::retnode('node1');
+        cmp_ok(@{$builder->nodes}, '==', 1, 'One current node after retnode');
+        $builder->__PACKAGE__::retfanout;
+        cmp_ok(@{$builder->nodes}, '==', 4, 'Four current nodes after retfanout');
+        my @node1succ = $builder->dag->_graph->all_successors($builder->dag->node_by_name('node1'));
+        cmp_ok(@node1succ, '==', 4, 'Four successors after retfanout');
+
+        $builder->__PACKAGE__::retparallel;
+        cmp_ok(@{$builder->nodes}, '==', 4, 'Four current nodes after retfanout');
+        foreach (@node1succ) {
+            cmp_ok($builder->dag->_graph->all_successors($_), '==', 1,
+                "Node @{[$_->name]} has one successor");
+        }
+    } #Builders::run
 }
 
 # === Run ===
 
 main;
 failures;
+Builders::run;
 
 done_testing;

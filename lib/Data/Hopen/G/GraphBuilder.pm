@@ -13,7 +13,7 @@ use Class::Tiny {
     name => 'ANON',     # Name is optional; it's here so the
                         #   constructor won't croak if you use one.
     dag => undef,       # The current G::DAG instance
-    node => undef,      # The last node added
+    nodes => sub { [] },    # The last node(s) added.  Always an arrayref.
 };
 
 use Class::Method::Modifiers qw(install_modifier);
@@ -49,9 +49,9 @@ An optional name, in case you want to identify your Builder instances.
 
 The current L<Data::Hopen::G::DAG> instance, if any.
 
-=head2 node
+=head2 nodes
 
-The current L<Data::Hopen::G::Node> instance, if any.
+The current L<Data::Hopen::G::Node> instance(s), if any.  Always an arrayref.
 
 =head1 INSTANCE FUNCTIONS
 
@@ -62,7 +62,7 @@ The current L<Data::Hopen::G::Node> instance, if any.
 =head2 add
 
 Adds a node to the graph.  Returns the node.  Note that this B<does not>
-change the builder's current node (L</node>).
+change the builder's current node (L</nodes>).
 
 =cut
 
@@ -74,11 +74,11 @@ sub add {
 
 =head2 default_goal
 
-Links the most recent node in the chain to the default goal in the DAG.
+Links the most recent node(s) in the chain to the default goal in the DAG.
 If the DAG does not have a default goal, adds one called "all".
 
 As a side effect, calling this function clears the builder's record of the
-current node and returns C<undef>.  The idea is that this function
+current node(s) and returns C<undef>.  The idea is that this function
 will be used at the end of a chain of calls.  Clearing state in this way
 reduces the chance of unintentionally connecting nodes.
 
@@ -86,68 +86,42 @@ reduces the chance of unintentionally connecting nodes.
 
 sub default_goal {
     my $self = shift or croak 'Need an instance';
-    croak "Need a node to link to the goal" unless $self->node;
 
     my $goal = $self->dag->default_goal // $self->dag->goal('all');
-    $self->dag->add($self->node);   # no harm in it - DAG::add() is idempotent
-    $self->dag->connect($self->node, $goal);
+    return $self->goal($goal);
+} #default_goal()
 
-    $self->node(undef);     # Less likely to leak state between goals.
+=head2 goal
+
+Links the most recent node(s) in the chain to the given goal in the DAG.
+Clears the builder's record of the current node and returns undef.  Usage:
+
+    $builder->goal(<goal instance or string goal name>);
+
+If you pass a goal instance, you are responsible for making sure it came from
+L<Data::Hopen::G::DAG/goal> or L<Data::Hopen::G::DAG/default_goal>.
+
+=cut
+
+sub goal {
+    my $self = shift or croak 'Need an instance';
+    my $goal_or_name = shift or croak 'Need a goal or goal name';
+    croak "Need a node to link to the goal" unless @{$self->nodes};
+
+    my $goal = ref($goal_or_name) ? $goal_or_name : $self->dag->goal($goal_or_name);
+    foreach my $node (@{$self->nodes}) {
+        $self->dag->add($node);     # no harm in it - DAG::add() is idempotent
+        $self->dag->connect($node, $goal);
+    }
+
+    $self->nodes([]);       # Less likely to leak state between goals.
 
     return undef;
         # Also, if this is the last thing in an App::hopen hopen file,
         # whatever it returns gets recorded in MY.hopen.pl.  Therefore,
         # return $self would cause a copy of the whole graph to be dropped into
         # MY.hopen.pl, which would be a Bad Thing.
-} #default_goal()
-
-=head2 goal
-
-Links the most recent node in the chain to the given goal in the DAG.
-Clears the builder's record of the current node and returns undef.
-
-=cut
-
-sub goal {
-    my $self = shift or croak 'Need an instance';
-    my $goal_name = shift or croak 'Need a goal name';
-    croak "Need a node to link to the goal" unless $self->node;
-
-    my $goal = $self->dag->goal($goal_name);
-    $self->dag->add($self->node);   # no harm in it - DAG::add() is idempotent
-    $self->dag->connect($self->node, $goal);
-
-    $self->node(undef);     # Less likely to leak state between goals.
-
-    return undef;   # undef: See comment in goal()
 } #goal()
-
-=head2 to
-
-Connect one node to another, where both are wrapped in C<GraphBuilder>s.
-Usage:
-
-    $builder_1->to($builder_2);
-        # No $builder_1->node has an edge to $builder_2->node
-
-Returns C<undef>, because chaining would be ambiguous.  For example,
-in the snippet above, would the chain continue from C<$builder_1> or
-C<$builder_2>?
-
-Does not change the state of either GraphBuilder.
-
-=cut
-
-sub to {
-    my ($self, %args) = parameters('self', [qw(dest)], @_);
-    croak 'Destination is not a ' . __PACKAGE__
-        unless $args{dest}->DOES(__PACKAGE__);
-    croak 'Cannot connect nodes from different graphs'
-        if refaddr($self->dag) != refaddr($args{dest}->dag);
-
-    $self->dag->connect($self->node, $args{dest}->node);
-    return undef;
-} #to()
 
 =head1 STATIC FUNCTIONS
 
@@ -166,7 +140,56 @@ GraphBuilder chain such as that shown in the L</SYNOPSIS>.  Usage:
         # now worker can take a DAG or GraphBuilder, and the
         # return value will be the GraphBuilder.
 
-The C<worker> subroutine is called in scalar context.
+    # then later...
+
+    my $dag = Data::Hopen::G::DAG->new;
+    my $builder = Data::Hopen::G::GraphBuilder->new(dag => $dag);
+    $builder->main::worker(@args);
+        # calls worker($builder, @args)
+
+If no parameter is given to C<make_GraphBuilder()>, C<$_> is used.
+
+=head3 Worker function
+
+The worker function (C<worker()> in the example above) is called in scalar
+context.  It receives the graph-builder instance as its first parameter.
+Any other parameters are those given in the calling code.and an arrayref of the current
+node(s) (L</nodes>).
+
+Depending on what the worker function returns, the builder will create different
+connections between nodes.  The worker function may not return a truthy
+non-reference The return-value options and corresponding behaviours are:
+
+=over
+
+=item something falsy
+
+The bulder does not add nodes or create links.  This is not an error.
+
+=item a single node
+
+Each of the current node(s) (L</nodes>) will be linked to the node returned
+by the worker function (1-1 or many-1 connection)
+
+=item a hashref
+
+A set of C<< mapping => [new node(s)] >> entries.  Possible C<mapping> values are:
+
+=over
+
+=item parallel
+
+Each of the current node(s) is linked to the corresponding one of the
+new node(s).  The graph gets parallel edges added, whence the name
+
+=item fanout
+
+Each of the current node(s) is linked to B<all> of the new node(s).  For
+a single input node, this is 1-to-many fanout, whence the name.
+
+=back
+
+=back
 
 =cut
 
@@ -174,7 +197,7 @@ sub _wrapper;
 
 sub make_GraphBuilder {
     my $target = caller;
-    my $funcname = shift or croak 'Need the name of the sub to wrap';   # yum
+    my $funcname = shift // $_ or croak 'Need the name of the sub to wrap';   # yum
 
     install_modifier $target, 'around', $funcname, \&_wrapper;
 } #make_GraphBuilder()
@@ -195,6 +218,9 @@ sub _wrapper {
 
     # Call the worker
     my $worker_retval = &{$orig};   # @_ passed to code
+
+    return $self unless $worker_retval;
+    croak "Builder $orig did not return a reference" unless ref $worker_retval;
 
     # If we got a node, remember it.
     if(ref $worker_retval && eval { $worker_retval->DOES('Data::Hopen::G::Node') } ) {
