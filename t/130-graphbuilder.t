@@ -37,7 +37,7 @@ is(ref \&next, 'CODE', 'next() is a sub after wrapping');
 cmp_ok($oldrefaddr, '!=', $newrefaddr, 'make_GraphBuilder changed next()');
 
 # A no-op builder
-sub nopbuild { }
+sub nopbuild { return undef }
 make_GraphBuilder 'nopbuild';
 
 # A would-be builder that does not return a blessed reference
@@ -74,9 +74,8 @@ sub main {
     my $op3 = get_only_node($builder);
     cmp_ok(refaddr $op3, '==', refaddr $op2, 'NOP builder leaves node the same');
 
-    $builder->main::plainrefbuild;
-    my $op4 = get_only_node($builder);
-    cmp_ok(refaddr $op4, '==', refaddr $op2, 'plain-ref builder leaves node the same');
+    like( exception { $builder->main::plainrefbuild },
+        qr/Invalid return value/, 'arrayref rejected' );
 
     $builder->main::nonnodebuild;
     my $op5 = get_only_node($builder);
@@ -98,12 +97,12 @@ sub main {
     ok($dag->_graph->has_edge($n2, $goal), 'edge node2->goal exists');
     ok(!$dag->_graph->has_edge($n1, $goal), 'edge node1->goal does not exist');
 
-    $builder->node($n3);
+    $builder->nodes([$n3]);
     $builder->default_goal;
     ok($dag->_graph->has_edge($n3, $goal), 'edge node3->goal exists');
 
     my $n4 = newnode('node4');
-    $builder->node($n4);
+    $builder->nodes([$n4]);
     $builder->goal('all');
     ok($dag->_graph->has_edge($n4, $goal), 'edge node3->goal("all") exists');
 
@@ -133,6 +132,7 @@ sub failures {
 # Test different return values of builder functions
 package Builders {
     use Test::More;
+    use Test::Fatal;
     use Data::Hopen qw(hnew);
     use Data::Hopen::Base;
     use Data::Hopen::G::DAG;
@@ -141,7 +141,8 @@ package Builders {
     sub retundef { return undef }
     sub retfalsy { return 0 }
     sub rettruthy { return 42 }
-    sub retnode { goto &main::newnode }
+    sub retarray { return [] }
+    sub retnode { shift; goto &main::newnode }
 
     sub retparallel {
         my $builder = shift;
@@ -153,33 +154,68 @@ package Builders {
         return +{ fanout => [map { main::newnode() } 0..3]};
     }
 
-    make_GraphBuilder foreach qw(retundef retfalsy rettruthy retnode retparallel retfanout);
+    sub retunknownrel { return +{ unsupported_relationship => [1] } }
+    sub retnonodes { return +{ parallel => [] } }
+
+    sub retwrongparallel {
+        my $builder = shift;
+        return +{ parallel => [map { main::newnode() } 0..$#{$builder->nodes}+1]};
+    }
+
+    sub retmultiple {
+        return +{ parallel => [1], fanout => [1]};
+    }
+
+    make_GraphBuilder foreach qw(retundef retfalsy rettruthy retarray
+                                    retnode retparallel retfanout
+                                    retunknownrel retnonodes retwrongparallel
+                                    retmultiple);
 
     sub run {
         my $dag1 = hnew DAG => 'dag1';
         my $builder = hnew GraphBuilder => 'builder1', dag => $dag1;
         cmp_ok(@{$builder->nodes}, '==', 0, 'No current nodes in new builder');
-        $builder->__PACKAGE__::retundef;
+        $builder->Builders::retundef;
         cmp_ok(@{$builder->nodes}, '==', 0, 'No current nodes after retundef');
-        $builder->__PACKAGE__::retfalsy;
+        $builder->Builders::retfalsy;
         cmp_ok(@{$builder->nodes}, '==', 0, 'No current nodes after retfalsy');
 
-        like( exception { $builder->__PACKAGE__::rettruthy },
+        like( exception { $builder->Builders::rettruthy },
             qr/did not return a reference/, 'truthy non-reference rejected' );
 
-        $builder->__PACKAGE__::retnode('node1');
+        like( exception { $builder->Builders::retarray },
+            qr/Invalid return value/, 'arrayref rejected' );
+
+        like( exception { $builder->Builders::retunknownrel },
+            qr/requested relationship.+unsupported_relationship/,
+            'unsupported relationship rejected' );
+
+        like( exception { $builder->Builders::retnonodes },
+            qr/provided no nodes/, 'empty set of new nodes rejected' );
+
+        my $name = 'retnode1';
+        $builder->Builders::retnode($name);
         cmp_ok(@{$builder->nodes}, '==', 1, 'One current node after retnode');
-        $builder->__PACKAGE__::retfanout;
+        $builder->Builders::retfanout;
         cmp_ok(@{$builder->nodes}, '==', 4, 'Four current nodes after retfanout');
-        my @node1succ = $builder->dag->_graph->all_successors($builder->dag->node_by_name('node1'));
+        my @node1succ = $builder->dag->_graph->all_successors(
+            $builder->dag->node_by_name($name));
         cmp_ok(@node1succ, '==', 4, 'Four successors after retfanout');
 
-        $builder->__PACKAGE__::retparallel;
-        cmp_ok(@{$builder->nodes}, '==', 4, 'Four current nodes after retfanout');
+        $builder->Builders::retparallel;
+        cmp_ok(@{$builder->nodes}, '==', 4, 'Four current nodes after retparallel');
         foreach (@node1succ) {
             cmp_ok($builder->dag->_graph->all_successors($_), '==', 1,
                 "Node @{[$_->name]} has one successor");
         }
+
+        like( exception { $builder->Builders::retwrongparallel },
+            qr/parallel.+must match.+nodes/, '"parallel" rejects mismatched node count' );
+
+        like( exception { $builder->Builders::retmultiple },
+            qr/one type of return/, 'multiple-key hashref rejected' );
+
+
     } #Builders::run
 }
 

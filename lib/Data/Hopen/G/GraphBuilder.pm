@@ -17,6 +17,7 @@ use Class::Tiny {
 };
 
 use Class::Method::Modifiers qw(install_modifier);
+use Data::Dumper;
 use Getargs::Mixed;
 use Scalar::Util qw(refaddr);
 
@@ -173,7 +174,8 @@ by the worker function (1-1 or many-1 connection)
 
 =item a hashref
 
-A set of C<< mapping => [new node(s)] >> entries.  Possible C<mapping> values are:
+A single C<< mapping => [new node(s)] >> entry.  At present, multiple
+mapping+arrayref pairs are no supported.  Possible C<mapping> values are:
 
 =over
 
@@ -219,15 +221,57 @@ sub _wrapper {
     # Call the worker
     my $worker_retval = &{$orig};   # @_ passed to code
 
+    hlog { 'Worker returned', Dumper($worker_retval) } 4;
+
     return $self unless $worker_retval;
-    croak "Builder $orig did not return a reference" unless ref $worker_retval;
+    die "Builder $orig did not return a reference" unless ref $worker_retval;
 
-    # If we got a node, remember it.
-    if(ref $worker_retval && eval { $worker_retval->DOES('Data::Hopen::G::Node') } ) {
+    # Make links
+    if(eval { $worker_retval->DOES('Data::Hopen::G::Node') } ) {    # many-to-1
         $self->dag->add($worker_retval);    # Link it into the graph
-        $self->dag->connect($self->node, $worker_retval) if $self->node;
+        $self->dag->connect($_, $worker_retval) foreach @{$self->nodes};
 
-        $self->node($worker_retval);        # It's now our current node
+        $self->nodes([$worker_retval]);        # It's now our current node
+
+    } elsif(ref $worker_retval eq 'HASH') {
+        my @keys = keys %$worker_retval;
+        if(@keys != 1) {
+            die "At this time, I can only handle one type of return.  Sorry!  (got @keys)";
+        }
+
+        my @vals = @{$worker_retval->{$keys[0]}};
+        die "Worker provided no nodes" unless @vals;
+
+        if($keys[0] eq 'parallel') {
+            if(@{$self->nodes} != @vals) {
+                die "For parallel, number @{[scalar @vals]} of new nodes" .
+                    " must match number @{[scalar @{$self->nodes}]} of" .
+                    " existing nodes.";
+            }
+            for my $idx (0..$#vals) {
+                my $destnode = $self->dag->add($vals[$idx]);
+                $self->dag->connect($self->nodes->[$idx], $destnode);
+            }
+
+            $self->nodes(\@vals);
+
+        } elsif($keys[0] eq 'fanout') {
+            my @srces = @{$self->nodes};    # for convenience
+
+            for my $destidx (0..$#vals) {
+                my $destnode = $self->dag->add($vals[$destidx]);
+                for my $srcidx (0..$#srces) {
+                    $self->dag->connect($srces[$srcidx], $destnode);
+                }
+            }
+
+            $self->nodes(\@vals);
+
+        } else {
+            die "I don't understand requested relationship ``$keys[0]''";
+        }
+    } else {
+        croak "Invalid return value $worker_retval from worker function $orig";
     }
 
     return $self;
