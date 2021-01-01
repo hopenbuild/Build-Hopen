@@ -12,7 +12,6 @@ lib/Data/Hopen/G/GraphBuilder.pm
 lib/Data/Hopen/G/Link.pm
 lib/Data/Hopen/G/Node.pm
 lib/Data/Hopen/G/NoOp.pm
-lib/Data/Hopen/G/Op.pm
 lib/Data/Hopen/G/OutputOp.pm
 lib/Data/Hopen/G/Runnable.pm
 lib/Data/Hopen/OrderedPredecessorGraph.pm
@@ -47,7 +46,6 @@ t/011-scope-env.t
 t/012-scope-nested.t
 t/030-ordered_pred.t
 t/050-runnable.t
-t/100-op.t
 t/101-collect-op.t
 t/120-dag.t
 t/121-dag-single-goal.t

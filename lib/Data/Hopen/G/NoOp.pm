@@ -5,7 +5,7 @@ use Data::Hopen::Base;
 
 our $VERSION = '0.000020';
 
-use parent 'Data::Hopen::G::Op';
+use parent 'Data::Hopen::G::Node';
 use Class::Tiny;
 
 # Docs {{{1
@@ -16,7 +16,7 @@ Data::Hopen::G::NoOp - a no-op
 
 =head1 SYNOPSIS
 
-An C<NoOp> is a concrete L<Data::Hopen::G::Op> that returns C<{}>.
+An C<NoOp> is a concrete L<Data::Hopen::G::Node> that returns C<{}>.
 It is mostly used for testing.
 
 =head1 FUNCTIONS

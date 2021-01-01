@@ -7,7 +7,7 @@ use Test::Fatal;
 
 use Data::Hopen qw(:v);
 use Data::Hopen::G::DAG;
-use Data::Hopen::G::Op;
+use Data::Hopen::G::Node;
 use Data::Hopen::G::NoOp;
 use Scalar::Util qw(refaddr);
 
@@ -82,7 +82,7 @@ cmp_ok($dag->_graph->vertices, '==', $vcount, 'add(same name) did not change ver
 
 our @results;   # lexical visible in the following package
 package MY::AppendOp {
-    use parent 'Data::Hopen::G::Op';
+    use parent 'Data::Hopen::G::Node';
     use Class::Tiny;
     sub _run {
         push @results, (shift)->name;

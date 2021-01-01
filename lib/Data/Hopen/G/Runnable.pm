@@ -81,8 +81,8 @@ values in the C<context>.
 
 If given, an instance that supports C<visit_goal()> and C<visit_node()> calls.
 A L<Data::Hopen::G::DAG> instance invokes those calls after processing each
-goal or other node, respectively.  They are invoked I<after> the goal or
-node has run.  They are, however, given access to the L<Data::Hopen::Scope>
+goal or other node, respectively.  They are invoked I<after> the goal or node
+has run.  They are, however, given access to the L<Data::Hopen::Scope>
 that the node used for its inputs, in the C<$node_inputs> parameter.  Example:
 
     $visitor->visit_goal($goal, $node_inputs);
@@ -112,6 +112,7 @@ sub run {
     hlog { '->', ref($self), $self->name, 'input', Dumper($self->scope->as_hashref) } 3;
 
     my $retval = $self->_run(forward_opts(\%args, {'-'=>1}, qw[visitor]));
+    $retval = {} unless defined $retval;    # a convenience
 
     die "$self\->_run() did not return a hashref" unless ref $retval eq 'HASH';
         # Prevent errors about `non-hashref 1` or `invalid key`.
@@ -128,8 +129,8 @@ subclasses.  When C<_run> is called, C<< $self->scope >> has been hooked
 to the context scope, if any.
 
 The only parameter is C<-visitor>, which is always passed by name
-(C<< -visitor=>$v >>).  C<_run> is always called in scalar context,
-and B<must> return a new hashref.
+(C<< -visitor=>$v >>) if it is provided.  C<_run> is always called in scalar
+context, and B<must> return a new hashref, or C<undef>.
 
 I recommend starting your C<_run> function with:
 

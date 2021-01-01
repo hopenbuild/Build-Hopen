@@ -25,7 +25,7 @@ tools used in the hopen build system (L<App::hopen>).
 
 =head1 ELEMENTS
 
-=head2 C<Data::Hopen::G::Op>
+=head2 C<Data::Hopen::G::Node>
 
 An operation.  Operations can, e.g., transform their inputs or invoke a
 visitor routine based on their inputs.  Operations

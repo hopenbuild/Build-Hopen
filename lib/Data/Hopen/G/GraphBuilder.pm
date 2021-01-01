@@ -195,7 +195,7 @@ node(s) (L</nodes>).
 
 Depending on what the worker function returns, the builder will create different
 connections between nodes.  The worker function may not return a truthy
-non-reference The return-value options and corresponding behaviours are:
+non-reference.  The return-value options and corresponding behaviours are:
 
 =over
 

@@ -5,7 +5,7 @@ use Data::Hopen::Base;
 
 our $VERSION = '0.000020';
 
-use parent 'Data::Hopen::G::Op';
+use parent 'Data::Hopen::G::Node';
 use Class::Tiny {
     should_output => true,      # if true, forward the goal's inputs as
                                 # its outputs.

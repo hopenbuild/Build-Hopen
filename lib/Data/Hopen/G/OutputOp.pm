@@ -6,7 +6,7 @@ use Data::Hopen::Base;
 
 our $VERSION = '0.000020';
 
-use parent 'Data::Hopen::G::Op';
+use parent 'Data::Hopen::G::Node';
 use Class::Tiny qw(output);
 
 # Docs {{{1
@@ -17,7 +17,7 @@ Data::Hopen::G::OutputOp - operation with a fixed output
 
 =head1 SYNOPSIS
 
-This is a L<Data::Hopen::G::Op> that simply outputs a fixed value you
+This is a L<Data::Hopen::G::Node> that simply outputs a fixed value you
 provide.  Usage:
 
     my $op = Data::Hopen::G::OutputOp(output => { foo => 42, bar => 1337 });

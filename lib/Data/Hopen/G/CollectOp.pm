@@ -5,7 +5,7 @@ use Data::Hopen::Base;
 
 our $VERSION = '0.000020';
 
-use parent 'Data::Hopen::G::Op';
+use parent 'Data::Hopen::G::Node';
 use Class::Tiny {
     levels => 'local',
 };
@@ -22,7 +22,7 @@ Data::Hopen::G::CollectOp - a passthrough operation
 
 =head1 SYNOPSIS
 
-An C<CollectOp> is a concrete L<Data::Hopen::G::Op> that passes its inputs, or
+An C<CollectOp> is a concrete L<Data::Hopen::G::Node> that passes its inputs, or
 other values drawn from its scope, to its outputs unchanged.  For example,
 C<CollectOp> instances are used by L<Data::Hopen::G::DAG> to represent goals.
 

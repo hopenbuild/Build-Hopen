@@ -5,7 +5,7 @@ use Data::Hopen::Base;
 
 our $VERSION = '0.000020';
 
-use parent 'Data::Hopen::G::Op';
+use parent 'Data::Hopen::G::Node';
 use Class::Tiny {
     goals   => sub { [] },
     default_goal => undef,
@@ -61,7 +61,7 @@ Data::Hopen::G::DAG - A hopen build graph
 =head1 SYNOPSIS
 
 This class encapsulates the DAG for a particular set of one or more goals.
-It is itself a L<Data::Hopen::G::Op> so that it can be composed into
+It is itself a L<Data::Hopen::G::Node> so that it can be composed into
 other DAGs.
 
 =head1 ATTRIBUTES
@@ -144,7 +144,7 @@ each goal's outputs as the values under that name.  Usage:
 
     my $hrOutputs = $dag->run([-context=>$scope][, other options])
 
-C<$scope> must be a L<Data::Hopen::Scope> or subclass if provided.
+C<$scope>, if provided, must be a L<Data::Hopen::Scope> or subclass.
 Other options are as L<Data::Hopen::G::Runnable/run>.
 
 When evaluating a node, the edges from its predecessors are traversed in
@@ -359,11 +359,13 @@ sub goal {
 
 =head2 connect
 
+May be called as:
+
 =over 4
 
 =item - C<< DAG:connect(<op1>, <out-edge>, <in-edge>, <op2>) >>
 
-B<Not yet implemented>.
+B<This invocation is not yet implemented>.
 Connects output C<out-edge> of operation C<op1> as input C<in-edge> of
 operation C<op2>.  No processing is done between output and input.
 C<out-edge> and C<in-edge> can be anything usable as a table index, provided
@@ -433,7 +435,7 @@ sub connect {
 Add a regular node to the graph.  An attempt to add the same node twice, or to
 add the same name twice, will be ignored.  Usage:
 
-    my $node = Data::Hopen::G::Op->new(name=>"whatever");
+    my $node = Data::Hopen::G::Node->new(name=>"whatever");
     $dag->add($node);
 
 Returns the node, for the sake of chaining.
@@ -450,6 +452,9 @@ sub add {
         return $_;
     }
 
+    croak 'Nodes must be Data::Hopen::G::Node instances'
+        unless eval { $node->DOES('Data::Hopen::G::Node'); };
+
     # Add the node
     hlog { __PACKAGE__, $self->name, 'adding', Dumper($node) } 2;
 
@@ -465,7 +470,7 @@ Add an initialization operation to the graph.  Initialization operations run
 before all other operations.  An attempt to add the same initialization
 operation twice will be ignored.  Usage:
 
-    my $op = Data::Hopen::G::Op->new(name=>"whatever");
+    my $op = Data::Hopen::G::Node->new(name=>"whatever");
     $dag->init($op[, $first]);
 
 If C<$first> is truthy, the op will be run before anything already in the
