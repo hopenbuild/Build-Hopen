@@ -12,8 +12,10 @@ use parent 'Exporter';
 # Probably keep hnew, hlog, $VERBOSE, and $QUIET here.
 use vars::i {
     '@EXPORT' => [qw(hnew hlog getparameters)],
-    '@EXPORT_OK' => [qw(loadfrom *VERBOSE *QUIET UNSPECIFIED NOTHING explainvar)],
-};                              #^ * => can be localized
+                                #v * => can be localized
+    '@EXPORT_OK' => [qw(loadfrom *VERBOSE *QUIET UNSPECIFIED NOTHING explainvar
+                        hlog_level_names)],
+};
 use vars::i '%EXPORT_TAGS' => {
     default => [@EXPORT],
     v => [qw(*VERBOSE *QUIET)],
@@ -77,12 +79,20 @@ and defaults to 0 if that variable is not present.
 
 Set to truthy to suppress output.  Quiet overrides L</$VERBOSE>.
 
+=head2 @hlog_level_names
+
+Lists of hlog level human-readable verbosity names.  If you change them,
+keep them to five characters or less each.
+
 =cut
 
 # }}}1
 
-use vars::i '$VERBOSE' => 0+ ($ENV{HOPEN_VERBOSITY} // '0');
-our $QUIET;     BEGIN { $QUIET = false; }
+use vars::i {
+    '$VERBOSE' => 0+ ($ENV{HOPEN_VERBOSITY} // '0'),
+    '$QUIET' => false,
+    '@hlog_level_names' => [qw(NONE info debug log trace peek)],
+};
 
 =head1 FUNCTIONS
 
@@ -154,7 +164,8 @@ Log information if L</$VERBOSE> is set.  Usage:
     hlog { <list of things to log> } [optional min verbosity level (default 1)];
 
 The items in the list are joined by C<' '> on output, and a C<'\n'> is added.
-Each line is prefixed with C<'# '> for the benefit of test runs.
+Each line is prefixed with C<'# '> for the benefit of test runs, and with
+its verbosity level name from L</@hlog_level_names>
 
 The list is in C<{}> so that it won't be evaluated if logging is turned off.
 It is a full block, so you can run arbitrary code to decide what to log.
@@ -172,14 +183,16 @@ will also be printed.
 
 sub hlog (&;$) {
     return if $QUIET;
-    return unless $VERBOSE >= ($_[1] // 1);
+    my $level = ($_[1] // 1);
+    return unless $VERBOSE >= $level;
 
     my @log = &{$_[0]}();
     return unless @log;
 
     chomp $log[$#log] if $log[$#log];
     # TODO add an option to number the lines of the output
-    my $msg = (join(' ', @log)) =~ s/^/# /gmr;
+    my $levelname = sprintf("%-6s", $hlog_level_names[$level] // $level);
+    my $msg = (join(' ', @log)) =~ s/^/# $levelname /gmr;
     if($VERBOSE>2) {
         my ($package, $filename, $line) = caller;
         $msg .= " (at $filename:$line)";
