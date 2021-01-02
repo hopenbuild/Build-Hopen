@@ -2,6 +2,7 @@
 requires 'Carp';
 requires 'Class::Method::Modifiers', '2.10';
 requires 'Class::Tiny', '1.001';
+requires 'Class::Tiny::ConstrainedAccessor', '0.000010';
 requires 'Config';
 requires 'Data::Dumper';
 requires 'Exporter';

@@ -12,7 +12,7 @@ use parent 'Exporter';
 # Probably keep hnew, hlog, $VERBOSE, and $QUIET here.
 use vars::i {
     '@EXPORT' => [qw(hnew hlog getparameters)],
-    '@EXPORT_OK' => [qw(loadfrom *VERBOSE *QUIET UNSPECIFIED NOTHING)],
+    '@EXPORT_OK' => [qw(loadfrom *VERBOSE *QUIET UNSPECIFIED NOTHING explainvar)],
 };                              #^ * => can be localized
 use vars::i '%EXPORT_TAGS' => {
     default => [@EXPORT],
@@ -227,6 +227,18 @@ sub loadfrom {
 
     return undef;
 } #loadfrom()
+
+=head2 explainvar
+
+Return a human-readable string saying, at a high level, what C<$_[0]>
+(or C<$_>, when no args are given) is.  Mostly for use in debugging.
+
+=cut
+
+sub explainvar :prototype(_) {
+    my $x = shift;
+    return !defined $x ? '<undef>' : (lc ref $x) || 'scalar';
+}
 
 =head1 CONSTANTS
 

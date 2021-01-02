@@ -211,6 +211,7 @@ my %opts = (
         #'Class::Tiny::Chained' => '0.002',
             # - Looks like it might be handy.
             # 0.002+ because that has only core dependencies.
+        'Class::Tiny::ConstrainedAccessor' => '0.000010',   # custom constraints
 
         ## 'Class::XPath' => '1.4',
         #'Clone::Choose' => '0.008',     # as used by Hash::Merge

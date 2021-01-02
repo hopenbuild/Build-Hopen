@@ -113,10 +113,23 @@ package TestDataHopen {
         $VERBOSE = 0;
     } #test_hlog()
 
+    sub test_explainvar {
+        is explainvar undef, '<undef>', 'explainvar undef';
+        is explainvar [], 'array', 'explainvar array';
+        is explainvar {}, 'hash', 'explainvar hash';
+        is explainvar 42, 'scalar', 'explainvar scalar';
+
+        do { is explainvar, '<undef>', 'explainvar undef $_'; } foreach undef;
+        do { is explainvar, 'array', 'explainvar array $_' } foreach [];
+        do { is explainvar, 'hash', 'explainvar hash $_' } foreach {};
+        do { is explainvar, 'scalar', "explainvar scalar $_" } foreach 42, "hello";
+    }
+
     sub run {
         test_hnew;
         test_loadfrom;
         test_hlog;
+        test_explainvar;
     }
 } #package DH
 
@@ -167,7 +180,7 @@ package TestDataHopenGNode {
     sub run {
         # Invalid invocations
         like(exception { Data::Hopen::G::Node::outputs() },
-            qr/Need an instance/,
+            qr/Need hashref/,
             'outputs() dies without $self');
 
         # outputs()
@@ -175,10 +188,10 @@ package TestDataHopenGNode {
         isa_ok($n, 'Data::Hopen::G::Node');
 
         like exception { $n->outputs([]) },
-            qr/set\b.*non-hashref/,
+            qr/Need hashref.+array/,
             'Node outputs(non-hashref) throws';
         like exception { $n->outputs(undef) },
-            qr/set\b.*non-hashref.*undef/,
+            qr/Need hashref.+<undef>/,
             'Node outputs(undef) throws';
 
         delete $n->{outputs} if exists $n->{outputs};
