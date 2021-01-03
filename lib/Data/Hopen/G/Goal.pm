@@ -8,7 +8,6 @@ our $VERSION = '0.000020';
 use parent 'Data::Hopen::G::Node';
 use Class::Tiny {
     should_output => true,      # if true, forward the goal's inputs as
-                                # its outputs.
 };
 
 use Data::Hopen;
@@ -18,16 +17,15 @@ use Data::Hopen::Util::Data qw(forward_opts);
 
 =head1 NAME
 
-Data::Hopen::G::Goal - a named goal in a hopen build
+Data::Hopen::G::Goal - a named target in a dataflow graph
 
 =head1 SYNOPSIS
 
-A C<Goal> is a named build target, e.g., C<doc> or C<dist>.  The name C<all>
-is reserved for the root goal.  Goals usually appear at the end of the build
-graph, but this is not required --- Goal nodes can appear anywhere in the
-graph.
+A C<Goal> is a named target, e.g., C<doc>, C<dist>, or C<all>.  Goals usually
+appear at the end of a dataflow path in a L<Data::Hopen::G::DAG>, but this is
+not required --- Goal nodes can appear anywhere in the graph.
 
-=head1 MEMBERS
+=head1 ATTRIBUTES
 
 =head2 should_output
 
@@ -36,7 +34,7 @@ If true, the goal's inputs are passed through as outputs.
 
 =head1 FUNCTIONS
 
-=head2 run
+=head2 _run
 
 Passes through the inputs if L</should_output> is set.
 
@@ -63,7 +61,7 @@ Enforce the requirement for a user-specified name.
 
 sub BUILD {
     my ($self, $args) = @_;
-    croak 'Goals must have names' unless $args->{name};
+    croak 'Goals must have names' unless $self->has_custom_name;
 } #BUILD()
 
 1;

@@ -127,6 +127,26 @@ $dag->_init_graph->add_edge($ops[$_], $ops[2]) foreach (0, 1);
 like( exception { $dag->run }, qr/Initializations contain a cycle/,
     'Detects cycles in init graph');
 
+# goal_class
+{
+    package MYGoal;
+    use parent 'Data::Hopen::G::Goal';
+}
+{
+    package BADGoal;
+    # Does not do Data::Hopen::G::Goal!
+}
+
+ok("MYGoal"->DOES('Data::Hopen::G::Goal'), "MYGoal does the required role");
+$dag = Data::Hopen::G::DAG->new(name=>'foo', goal_class => 'MYGoal');
+my $g1 = $dag->goal('all');
+isa_ok($g1, 'MYGoal');
+is($g1->name, 'all', 'Goal name OK');
+
+ok(!("BADGoal"->DOES('Data::Hopen::G::Goal')), "BADGoal does not do the required role");
+like(exception { Data::Hopen::G::DAG->new(name=>'foo', goal_class => 'BADGoal') },
+    qr/must implement .+::Goal/, 'goal_class DOES enforcement works');
+
 # Extra tests for coverage
 
 # Anon dag

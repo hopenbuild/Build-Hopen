@@ -5,28 +5,7 @@ use Data::Hopen::Base;
 
 our $VERSION = '0.000020';
 
-use parent 'Data::Hopen::G::Node';
-use Class::Tiny {
-    goals   => sub { [] },
-    default_goal => undef,
-    winner => undef,
-
-    # Private attributes with simple defaults
-    _node_by_name => sub { +{} },   # map from node names to nodes in either
-                                    # _init_graph or _graph
-
-    # Private attributes - initialized by BUILD()
-    _graph  => undef,   # L<Data::Hopen::OrderedPredecessorGraph> instance
-    _final   => undef,  # The graph sink - all goals have edges to this
-
-    #Initialization operations
-    _init_graph => undef,   # L<Data::Hopen::OrderedPredecessorGraph>
-                            # for initializations
-    _init_first => undef,   # Graph node for initialization - the first
-                            # init operation to be performed.
-
-    # TODO? also support fini to run operations after _graph runs?
-};
+use parent 'Data::Hopen::G::Node';  # and Class::Tiny below
 
 use Data::Hopen qw(hlog getparameters *QUIET);
 use Data::Hopen::G::Goal;
@@ -72,7 +51,13 @@ Arrayref of the goals for this DAG.
 
 =head2 default_goal
 
-The default goal for this DAG.
+The name of the default goal for this DAG.
+
+=head2 goal_class
+
+When creating new goals, use this class.  By default, L<Data::Hopen::G::Goal>.
+The specified goal class must do (e.g., derive from or mix in)
+L<Data::Hopen::G::Goal>.
 
 =head2 winner
 
@@ -118,11 +103,43 @@ single node just to force the topological sort to work out.
 
 The first node to be run in _init_graph.
 
-=head1 FUNCTIONS
-
 =cut
 
 # }}}1
+
+use subs 'BUILD';
+
+use Class::Tiny::ConstrainedAccessor {
+    goal_class => [
+        sub { eval { "$_[0]"->DOES('Data::Hopen::G::Goal'); } },
+        sub { 'goal_class must implement Data::Hopen::G::Goal' },
+    ],
+};
+
+use Class::Tiny {
+    goals   => sub { [] },
+    default_goal => undef,
+    goal_class => 'Data::Hopen::G::Goal',
+    winner => undef,
+
+    # Private attributes with simple defaults
+    _node_by_name => sub { +{} },   # map from node names to nodes in either
+                                    # _init_graph or _graph
+
+    # Private attributes - initialized by BUILD()
+    _graph  => undef,   # L<Data::Hopen::OrderedPredecessorGraph> instance
+    _final   => undef,  # The graph sink - all goals have edges to this
+
+    #Initialization operations
+    _init_graph => undef,   # L<Data::Hopen::OrderedPredecessorGraph>
+                            # for initializations
+    _init_first => undef,   # Graph node for initialization - the first
+                            # init operation to be performed.
+
+    # TODO? also support fini to run operations after _graph runs?
+};
+
+=head1 FUNCTIONS
 
 =head2 _record_node_name
 
@@ -345,10 +362,10 @@ sub goal {
         return $existing;
     }
 
-    hlog { __PACKAGE__, $self->name, 'adding goal', $name } 2;
+    hlog { __PACKAGE__, $self->name, 'adding goal', $name, 'of type', $self->goal_class } 2;
 
     # Add the goal
-    my $goal = Data::Hopen::G::Goal->new(name => $name);
+    my $goal = "@{[$self->goal_class]}"->new(name => $name);
     $self->add($goal);
 
     $self->_graph->add_edge($goal, $self->_final);
@@ -546,6 +563,8 @@ sub BUILD {
 
     # DAGs always have names
     $self->name('__R_DAG_' . $_id_counter++) unless $self->has_custom_name;
+
+    $self->_check_all_constraints($hrArgs);
 
     # Graph of normal operations
     my $graph = Data::Hopen::OrderedPredecessorGraph->new( directed => true,

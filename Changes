@@ -13,6 +13,8 @@ Revision history for Data-Hopen
         - Provide the list of predecessor nodes to the visitor
     - Data::Hopen::G::Runnable::_run() can now return undef, and ...::run()
       will replace it with {}.
+    - New attribute Data::Hopen::G::DAG::goal_class to specify the class
+      used by goal()
 
 0.000019    2020-12-26
     - No longer treat -phase specially when running DAGs.
