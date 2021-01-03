@@ -22,39 +22,50 @@ L<Data::Hopen::G::Dag/run>.
 
 # }}}1
 
-# TODO merge visit_goal and visit_node into visit(node|goal => $node)
-#Process a L<Data::Hopen::G::Node> or L<Data::Hopen::G::Goal>.
-
 =head1 FUNCTIONS
 
-=head2 visit_goal
+=head2 visit
 
-Process a L<Data::Hopen::G::Goal>.
+Process a L<Data::Hopen::G::Node> or L<Data::Hopen::G::Goal>.
 
 Called after the node runs.  Invoked as:
 
-    $visitor->visit_goal($goal, \@predecessors);
+    $visitor->visit($node, $type, $node_inputs, \@predecessors);
 
-where C<$goal> is the goal node and C<@predecessors> is a list of that node's
-predecessors in the DAG.
+Any return value of C<visit()> is ignored.  Before this function is called,
+C<< $goal->outputs >> (L<Data::Hopen::G::Node/outputs>) is set to the hashref
+of outputs produced by running that node.
 
-Before this is called, C<< $goal->outputs >> (L<Data::Hopen::G::Node/outputs>)
-is set to the hashref of outputs produced by running that node.
+Input parameters are:
 
-Any return value of C<visit_goal()> is ignored.
+=over
+
+=item C<$node>
+
+The goal node
+
+=item C<$type>
+
+Either C<'goal'> for goals or C<'node'> for non-goals
+
+=item C<$node_inputs>
+
+A L<Data::Hopen::Scope> of the inputs given to C<< $node->run >> just before
+the visitor was called.  (Note that the node's outputs are cached in
+C<< $node->outputs >>, which the visitor is allowed to change.)
+
+=item C<\@predecessors>
+
+An arrayref of C<$node>'s predecessors in the DAG.
+
+=back
+
+(If you need to use C<$node_inputs> or C<@predecessors>, open an issue so we
+can consider adding a cleaner API for your use case.)
 
 =cut
 
-sub visit_goal { ... }
-
-=head2 visit_node
-
-Process a graph node that is not a C<Data::Hopen::G::Goal>.  All other details
-are the same as
-
-=cut
-
-sub visit_node { ... }
+sub visit { ... }
 
 1;
 __END__

@@ -233,7 +233,8 @@ sub _run {
         $node_inputs->merge_strategy($merge_strategy);
 
         # Iterate over each node's edges and process any Links
-        foreach my $pred ($graph->ordered_predecessors($node)) {
+        my @preds = $graph->ordered_predecessors($node);
+        foreach my $pred (@preds) {
             hlog { ('From', $pred->name, 'to', $node->name) };
 
             # Goals do not feed outputs to other Goals.  This is so you can
@@ -298,14 +299,14 @@ sub _run {
 
         # Give the visitor a chance, and stash the results if necessary.
         if(eval { $node->DOES('Data::Hopen::G::Goal') }) {
-            $args{visitor}->visit_goal($node, $node_inputs) if $args{visitor};
+            $args{visitor}->visit($node, 'goal', $node_inputs, \@preds) if $args{visitor};
 
             # Save the result if there is one.  Don't save {}.
             # use $node->outputs, not $step_output, since the visitor may
             # alter $node->outputs.
             $retval->{$node->name} = $node->outputs if keys %{$node->outputs};
         } else {
-            $args{visitor}->visit_node($node, $node_inputs) if $args{visitor};
+            $args{visitor}->visit($node, 'node', $node_inputs, \@preds) if $args{visitor};
         }
 
         hlog { 'Finished node', $node->name, 'with outputs',

@@ -35,13 +35,13 @@ sub make_dag {  # See t/121-dag-single-goal.t for the explanation of this
     package MyVisitor;
     use Class::Tiny { node=>undef, goal=>undef };
     use Test::More;
-    sub visit_goal {
-        my ($self, $goal) = @_;
-        $self->goal($goal);
-    }
-    sub visit_node {
-        my ($self, $node) = @_;
-        $self->node($node);
+    sub visit {
+        my ($self, $node, $type) = @_;
+        if($type eq 'goal') {
+            $self->goal($node);
+        } else {
+            $self->node($node);
+        }
     }
 }
 

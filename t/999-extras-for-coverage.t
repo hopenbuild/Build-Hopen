@@ -107,7 +107,7 @@ package TestDataHopen {
 
         $VERBOSE = 1;   # So hlog will actually get to running the sub
         is capture_stderr { hlog(sub {}) }, '', 'No hlog output';
-        like capture_stderr { hlog(sub { "" }) }, qr/^# $/m,
+        like capture_stderr { hlog(sub { "" }) }, qr/^# info\h+$/m,
             'Empty-string hlog output';
             # coverage for the "chomp if"
         $VERBOSE = 0;

@@ -79,15 +79,8 @@ values in the C<context>.
 
 =item -visitor
 
-If given, an instance that supports C<visit_goal()> and C<visit_node()> calls.
-A L<Data::Hopen::G::DAG> instance invokes those calls after processing each
-goal or other node, respectively.  They are invoked I<after> the goal or node
-has run.  They are, however, given access to the L<Data::Hopen::Scope>
-that the node used for its inputs, in the C<$node_inputs> parameter.  Example:
-
-    $visitor->visit_goal($goal, $node_inputs);
-
-The return value from C<visit_goal()> or C<visit_node()> is ignored.
+If given, a L<Data::Hopen::Visitor> instance.  A L<Data::Hopen::G::DAG>
+instance invokes L<Data::Hopen::Visitor/visit> after processing each node.
 
 =item -nocontext
 
