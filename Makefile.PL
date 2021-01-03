@@ -302,10 +302,12 @@ my %opts = (
                 requires => {
                     'App::RewriteVersion' => '0',   # for perl-bump-version
                     'CPAN::Meta' => '0',
+                    'File::Globstar' => '0.5',      # Fewer dependencies
                     'File::Slurp' => '9999.26',
                     'Module::CPANfile' => '0.9020', # for from_prereqs()
                     'Module::Metadata' => '1.000016',
                     'Test::Kwalitee' => '0',
+                    'Test::Pod' => '1.22',
                 },
             },
         },

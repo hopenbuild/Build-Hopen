@@ -9,3 +9,5 @@ BEGIN {
 use Test::Kwalitee 'kwalitee_ok';
 kwalitee_ok();
 done_testing;
+# NOTE: we fail has_meta_yml when run from a source checkout, but META.yml
+# is in the dist.
