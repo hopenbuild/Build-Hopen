@@ -201,7 +201,7 @@ package TestDataHopenGNode {
 
 package TestDataHopenUtilData {
     use HopenTest;
-    use Data::Hopen::Util::Data qw(boolify clone dedent forward_opts);
+    use Data::Hopen::Util::Data qw(boolify clone dedent forward_opts fwdopts);
     use List::AutoNumbered;
     use Scalar::Util qw(refaddr);
     use Test::Fatal;
@@ -252,9 +252,16 @@ package TestDataHopenUtilData {
         like(exception { forward_opts; }, qr/Need/, 'forward_opts requires arg');
         like(exception { forward_opts [] }, qr/hashref/, 'forward_opts requires hashref');
         is_deeply(+{forward_opts({foo=>42}, 'foo')}, {foo=>42}, 'forward_opts: plain');
+        is_deeply(+{forward_opts({}, 'foo')}, {}, 'forward_opts: empty input');
         is_deeply(+{forward_opts({foo=>42}, {}, 'foo')}, {foo=>42}, 'forward_opts: empty opts');
         is_deeply(+{forward_opts({FOO=>42}, {lc=>1}, 'FOO')}, {foo=>42}, 'forward_opts: lc');
         is_deeply(+{forward_opts({foo=>42}, {'-'=>1}, 'foo')}, {-foo=>42}, 'forward_opts: -');
+
+        is_deeply(+{fwdopts()}, {}, 'fwdopts, empty');
+        is_deeply(+{fwdopts(foo=>42)}, {-foo=>42}, 'fwdopts, one key');
+        is_deeply(+{fwdopts(foo=>42, bar=>1337)}, {-foo=>42, -bar=>1337}, 'fwdopts, two keys');
+
+        is_deeply(+{fwdopts(foo=>42, bar=>1337, [qw(bar)])}, {-bar=>1337}, 'fwdopts, two keys, but only one selected');
     };
 
     sub run { &$_ foreach @TESTS; }

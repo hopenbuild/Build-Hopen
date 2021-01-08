@@ -10,7 +10,7 @@ use parent 'Exporter';
 our (@EXPORT, @EXPORT_OK, %EXPORT_TAGS);
 BEGIN {
     @EXPORT = qw();
-    @EXPORT_OK = qw(boolify clone dedent forward_opts identical);
+    @EXPORT_OK = qw(boolify clone dedent forward_opts fwdopts);  # identical
     %EXPORT_TAGS = (
         default => [@EXPORT],
         all => [@EXPORT, @EXPORT_OK]
@@ -167,6 +167,32 @@ sub forward_opts {
 
     return %result;
 } #forward_opts()
+
+=head2 fwdopts
+
+A shortcut for a common use case of L</forward_opts>, namely adding
+hyphens back into parameter names for consumption by
+L<Data::Hopen/getparameters>.  E.g,
+
+    fwdopts(foo => 1, bar => 2)
+
+is the same as
+
+    forward_opts({foo => 1, bar => 2}, {'-'=>1}, qw(foo bar))
+
+You can pass an arrayref of keys as the last parameter to select fewer than
+all keys in the hash.
+
+=cut
+
+sub fwdopts {
+    my $which;
+    $which = pop if @_ % 2 && ref $_[$#_] eq 'ARRAY';
+
+    my %h = @_;
+    $which //= [keys %h];
+    forward_opts(\%h, {'-'=>1}, @$which);
+}
 
 # The following are commented out as they are not currently in use.
 #=head2 identical
