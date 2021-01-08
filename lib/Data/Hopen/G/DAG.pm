@@ -12,7 +12,7 @@ use Data::Hopen::G::Goal;
 use Data::Hopen::G::Link;
 use Data::Hopen::G::Node;
 use Data::Hopen::G::CollectOp;
-use Data::Hopen::Util::Data qw(forward_opts);
+use Data::Hopen::Util::Data qw(fwdopts);
 use Data::Hopen::OrderedPredecessorGraph;
 use Getargs::Mixed; # parameters, which doesn't permit undef
 use Hash::Merge;
@@ -310,7 +310,7 @@ sub _run {
         } #foreach predecessor node
 
         my $step_output = $node->run(-context=>$node_inputs,
-            forward_opts(\%args, {'-'=>1}, 'visitor')
+            fwdopts(%args, ['visitor'])
         );
         $node->outputs($step_output);
 

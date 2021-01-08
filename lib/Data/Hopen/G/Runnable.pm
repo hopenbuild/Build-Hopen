@@ -7,7 +7,7 @@ our $VERSION = '0.000020';
 
 use Data::Hopen;
 use Data::Hopen::Scope::Hash;
-use Data::Hopen::Util::Data qw(forward_opts);
+use Data::Hopen::Util::Data qw(fwdopts);
 use Data::Hopen::Util::NameSet;
 use Hash::Merge;
 
@@ -104,7 +104,7 @@ sub run {
 
     hlog { '->', ref($self), $self->name, 'input', Dumper($self->scope->as_hashref) } 3;
 
-    my $retval = $self->_run(forward_opts(\%args, {'-'=>1}, qw[visitor]));
+    my $retval = $self->_run(fwdopts(%args, ['visitor']));
     $retval = {} unless defined $retval;    # a convenience
 
     die "$self\->_run() did not return a hashref" unless ref $retval eq 'HASH';

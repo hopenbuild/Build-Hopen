@@ -39,7 +39,7 @@ use constant _LOCAL => 'local';
 # What we use
 use Config;
 use Data::Hopen qw(getparameters);
-use Data::Hopen::Util::Data qw(clone forward_opts);
+use Data::Hopen::Util::Data qw(clone fwdopts);
 use Hash::Merge;
 use POSIX ();
 use Set::Scalar;
@@ -237,7 +237,7 @@ sub find {
     return $here if defined $here;
 
     return $self->_invoke('find', $args{levels},
-        forward_opts(\%args, {'-'=>1}, qw(name set))
+        fwdopts(%args, [qw(name set)])
     );
 } #find()
 
@@ -317,7 +317,7 @@ sub _fill_hashref {
     }
 
     return $self->_invoke('_fill_hashref', $args{levels},
-        forward_opts(\%args, {'-'=>1}, qw(retval deep)));
+        fwdopts(%args, [qw(retval deep)]));
 } #_fill_hashref()
 
 =head2 outerize

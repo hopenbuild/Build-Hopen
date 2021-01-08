@@ -11,7 +11,7 @@ use Class::Tiny {
 };
 
 use Data::Hopen;
-use Data::Hopen::Util::Data qw(forward_opts);
+use Data::Hopen::Util::Data qw(fwdopts);
 
 # Docs {{{1
 
@@ -50,7 +50,7 @@ sub _run {
     return {} unless $self->should_output;
 
     return $self->passthrough(-nocontext=>1, -levels => 'local',
-            forward_opts(\%args, {'-'=>1}, qw[visitor]));
+            fwdopts(%args, [qw[visitor]]));
 } #_run()
 
 =head2 BUILD
