@@ -3,7 +3,7 @@ package Data::Hopen::G::Goal;
 use strict;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000020';
+our $VERSION = '0.000020'; # TRIAL
 
 use parent 'Data::Hopen::G::Node';
 use Class::Tiny {

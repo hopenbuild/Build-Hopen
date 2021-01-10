@@ -1,6 +1,6 @@
 Revision history for Data-Hopen
 
-0.000020    2021-??-??
+0.000020    2021-??-?? (TRIAL RELEASE)
     - Breaking changes:
       - Data::Hopen::G:
           - Remove Data::Hopen::G::Op --- it didn't add anything over ...::Node,

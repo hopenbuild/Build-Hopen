@@ -26,7 +26,7 @@ use Data::Hopen::Util::NameSet;
 use Getargs::Mixed;
 use Storable ();
 
-our $VERSION = '0.000020';
+our $VERSION = '0.000020'; # TRIAL
 
 # Docs {{{1
 

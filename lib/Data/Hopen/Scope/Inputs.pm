@@ -4,7 +4,7 @@ use Data::Hopen;
 use strict;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000020';
+our $VERSION = '0.000020'; # TRIAL
 
 # TODO if a class
 use parent 'Data::Hopen::Scope';

@@ -3,7 +3,7 @@ package Data::Hopen::G::DAG;
 use strict;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000020';
+our $VERSION = '0.000020'; # TRIAL
 
 use parent 'Data::Hopen::G::Node';  # and Class::Tiny below
 
