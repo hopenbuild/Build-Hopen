@@ -87,6 +87,12 @@ instance invokes L<Data::Hopen::Visitor/visit> after processing each node.
 If C<< -nocontext=>1 >> is specified, don't link a context scope into
 this one.  May not be specified together with C<-context>.
 
+=item -graph
+
+If given, the L<Data::Hopen::G::DAG> (or subclass) instance in which this
+operation is being run.  If DAGs are nested, C<-graph> only provides the
+innermost DAG.  This is to preserve encapsulation.
+
 =back
 
 See the source for this function, which contains as an example of setting the
@@ -95,7 +101,7 @@ scope.
 =cut
 
 sub run {
-    my ($self, %args) = getparameters('self', [qw(; context visitor nocontext)], @_);
+    my ($self, %args) = getparameters('self', [qw(; context visitor nocontext graph)], @_);
     my $context_scope = $args{context};     # which may be undef - that's OK
     croak "Can't combine -context and -nocontext" if $args{context} && $args{nocontext};
 
@@ -104,7 +110,7 @@ sub run {
 
     hlog { '->', ref($self), $self->name, 'input', Dumper($self->scope->as_hashref) } 3;
 
-    my $retval = $self->_run(fwdopts(%args, ['visitor']));
+    my $retval = $self->_run(fwdopts(%args, [qw(visitor graph)]));
     $retval = {} unless defined $retval;    # a convenience
 
     die "$self\->_run() did not return a hashref" unless ref $retval eq 'HASH';
@@ -121,13 +127,13 @@ The internal method that implements L</run>.  Must be implemented by
 subclasses.  When C<_run> is called, C<< $self->scope >> has been hooked
 to the context scope, if any.
 
-The only parameter is C<-visitor>, which is always passed by name
-(C<< -visitor=>$v >>) if it is provided.  C<_run> is always called in scalar
-context, and B<must> return a new hashref, or C<undef>.
+The parameters are C<<-visitor => $v >> and C<< -graph => $g >>, described
+above with reference to L</run>.  C<$v> and C<$g> maybe undef.  C<_run> is
+always called in scalar context, and B<must> return a new hashref, or C<undef>.
 
 I recommend starting your C<_run> function with:
 
-    my ($self, %args) = getparameters('self', [qw(; visitor)], @_);
+    my ($self, %args) = getparameters('self', [qw(; visitor graph)], @_);
 
 and working from there.
 

@@ -43,7 +43,7 @@ Passes through the inputs if L</should_output> is set.
 # }}}1
 
 sub _run {
-    my ($self, %args) = getparameters('self', [qw(; visitor)], @_);
+    my ($self, %args) = getparameters('self', [qw(; visitor graph)], @_);
     hlog { Goal => $self->name, ($self->should_output ? 'with' : 'without'),
             'outputs' };
 

@@ -171,7 +171,7 @@ the order those predecessors were added to the graph.
 
 # The implementation of run().  $self->scope has already been linked to the context.
 sub _run {
-    my ($self, %args) = getparameters('self', [qw(; visitor)], @_);
+    my ($self, %args) = getparameters('self', [qw(; visitor graph)], @_);
     my $retval = {};
 
     # --- Get the initialization ops ---
@@ -259,6 +259,7 @@ sub _run {
             # data for each Goal separate.
             # TODO add tests for this.  Also TODO decide whether this is
             # actually the Right Thing!
+            # TODO check L<Data::Hopen::G::Goal/should_output>?
             next if eval { $pred->DOES('Data::Hopen::G::Goal') };
 
             my $links = $graph->get_edge_attribute($pred, $node, LINKS);
@@ -299,7 +300,7 @@ sub _run {
 
                 $hrLinkOutputs = $link->run(
                     -context=>$scLinkInputs,
-                    # visitor not passed to links.
+                    # visitor, graph not passed to links.
                 );
                 $scLinkInputs = make_link_inputs($hrLinkOutputs);
             } #foreach incoming link
@@ -310,7 +311,7 @@ sub _run {
         } #foreach predecessor node
 
         my $step_output = $node->run(-context=>$node_inputs,
-            fwdopts(%args, ['visitor'])
+            -graph => $self, fwdopts(%args, ['visitor'])
         );
         $node->outputs($step_output);
 
@@ -322,6 +323,8 @@ sub _run {
             # use $node->outputs, not $step_output, since the visitor may
             # alter $node->outputs.
             $retval->{$node->name} = $node->outputs if keys %{$node->outputs};
+                # TODO FIXME: (1) this is inconsistent with the treatment of
+                # Goal in the foreach(@preds) loop.  (2) check $node->should_output.
         } else {
             $args{visitor}->visit($node, 'node', $node_inputs, \@preds) if $args{visitor};
         }
@@ -381,7 +384,7 @@ May be called as:
 
 =over 4
 
-=item - C<< DAG:connect(<op1>, <out-edge>, <in-edge>, <op2>) >>
+=item - C<< $dag->connect(<op1>, <out-edge>, <in-edge>, <op2>) >>
 
 B<This invocation is not yet implemented>.
 Connects output C<out-edge> of operation C<op1> as input C<in-edge> of
@@ -389,12 +392,12 @@ operation C<op2>.  No processing is done between output and input.
 C<out-edge> and C<in-edge> can be anything usable as a table index, provided
 that table index appears in the corresponding operation's descriptor.
 
-=item - C<< DAG:connect(<op1>, <op2>) >>
+=item - C<< $dag->connect(<op1>, <op2>) >>
 
 Creates a dependency edge from C<op1> to C<op2>, indicating that C<op1> must be
 run before C<op2>.  Does not transfer any data from C<op1> to C<op2>.
 
-=item - C<< DAG:connect(<op1>, <Link>, <op2>) >>
+=item - C<< $dag->connect(<op1>, <Link>, <op2>) >>
 
 Connects C<op1> to C<op2> via L<Data::Hopen::G::Link> C<Link>.
 C<Link> may be undef, in which case this is treated as the two-parameter form.
@@ -430,7 +433,7 @@ sub connect {
     #my $out_edge = false;      # No outputs    TODO use these?
     #my $in_edge = false;       # No inputs
 
-    hlog { 'DAG::connect(): Edge from', $op1->name,
+    hlog { 'dag->connect(): Edge from', $op1->name,
             'via', $link ? $link->name : '(no link)',
             'to', $op2->name };
 
@@ -604,7 +607,7 @@ The following is TODO:
 
 =over 4
 
-=item - C<< DAG::inject(<op1>,<op2>[, after/before]) >>
+=item - C<< $dag->inject(<op1>,<op2>[, after/before]) >>
 
 Returns an operation that
 lives on the edge between C<op1> and C<op2>.  If the third parameter is

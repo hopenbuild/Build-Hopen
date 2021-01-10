@@ -36,7 +36,7 @@ A hashref that will be the output.
 
 =head2 _run
 
-Implementation of L<Data::Hopen::G::Runnable/run>.
+Returns L</output>.  See L<Data::Hopen::G::Runnable/_run> for usage.
 
 =cut
 

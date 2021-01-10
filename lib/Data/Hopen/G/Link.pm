@@ -7,7 +7,7 @@ our $VERSION = '0.000020';
 
 use parent 'Data::Hopen::G::Runnable';
 use Class::Tiny {
-    greedy => 0
+    greedy => true,
 };
 
 use Data::Hopen qw(:default UNSPECIFIED);
@@ -17,13 +17,14 @@ use Data::Hopen::Util::Data qw(clone);
 
 Data::Hopen::G::Link - The base class for all hopen links between ops.
 
-=head1 VARIABLES
+=head1 ATTRIBUTES
 
 =head2 greedy
 
-If set truthy in the C<new()> call, the edge will ask for all inputs.
+(default true) Unless set falsy in the C<new()> call, the edge will ask for all
+inputs.
 
-=head1 FUNCTIONS
+=head1 METHODS
 
 =head2 run
 
@@ -39,7 +40,7 @@ By default, the output is a copy of the inputs
 =cut
 
 sub _run {
-    my ($self, %args) = getparameters('self', [qw(; visitor)], @_);
+    my ($self, $scope) = @_;
     return $self->passthrough(-nocontext => 1);
 } #run()
 

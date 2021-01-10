@@ -1,22 +1,26 @@
 Revision history for Data-Hopen
 
 0.000020    2021-??-??
-    - Breaking changes in Data::Hopen::G::GraphBuilder:
-        - Replace scalar node property with arrayref nodes property
-        - goal/default_goal(): connect all nodes to the goal
-    - Breaking changes in Data::Hopen::G:
-        - Remove Data::Hopen::G::Op --- it didn't add anything over ...::Node,
-          so just use Node directly.
-    - Breaking changes in Data::Hopen::Visitor:
-        - Merge visit_goal() and visit_node() into a single visit() with
-          a new parameter list
-        - Provide the list of predecessor nodes to the visitor
-    - Data::Hopen::G::Runnable::_run() can now return undef, and ...::run()
-      will replace it with {}.
-    - New attribute Data::Hopen::G::DAG::goal_class to specify the class
-      used by goal()
-    - Data::Hopen::Util::Data: New function fwdopts() for the most common
-      case of forward_opts()
+    - Breaking changes:
+      - Data::Hopen::G:
+          - Remove Data::Hopen::G::Op --- it didn't add anything over ...::Node,
+            so just use Node directly.
+      - Data::Hopen::G::GraphBuilder:
+          - Replace scalar node property with arrayref nodes property
+          - goal/default_goal(): connect all nodes to the goal
+      - Data::Hopen::Visitor:
+          - Merge visit_goal() and visit_node() into a single visit() with
+            a new parameter list
+          - Provide the list of predecessor nodes to the visitor
+    - Enhancements:
+      - New attribute Data::Hopen::G::DAG::goal_class to specify the class
+        used by goal()
+      - Data::Hopen::G::Runnable:
+        - _run() can now return undef, and ...::run() will replace it with {}.
+        - run() and _run() receive -graph => $g so they have access to the
+          current DAG.
+      - Data::Hopen::Util::Data: New function fwdopts() for the most common
+        case of forward_opts()
 
 0.000019    2020-12-26
     - No longer treat -phase specially when running DAGs.
