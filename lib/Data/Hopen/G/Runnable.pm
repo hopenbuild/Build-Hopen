@@ -125,11 +125,13 @@ sub run {
 
 The internal method that implements L</run>.  Must be implemented by
 subclasses.  When C<_run> is called, C<< $self->scope >> has been hooked
-to the context scope, if any.
+to the context scope, if any.  Therefore, the inputs to the node are in
+C<< $self->scope >>.
 
-The parameters are C<<-visitor => $v >> and C<< -graph => $g >>, described
-above with reference to L</run>.  C<$v> and C<$g> maybe undef.  C<_run> is
-always called in scalar context, and B<must> return a new hashref, or C<undef>.
+The parameters to the function are C<< -visitor => $v >> and
+C<< -graph => $g >>, described above with reference to L</run>.  C<$v> and
+C<$g> may be C<undef>.  C<_run> is always called in scalar context, and B<must>
+return a new hashref, or C<undef> (which is treated as C<{}>).
 
 I recommend starting your C<_run> function with:
 

@@ -1,4 +1,8 @@
 # Data::Hopen::G::GraphBuilder - fluent interface for building graphs
+
+# TODO? Return a new GraphBuilder instance each function call?
+# Or, in general, how to handle fanout > 1?  E.g., one H::want to
+# multiple nodes.  Accept arrayrefs of nodes in worker functions?
 package Data::Hopen::G::GraphBuilder;
 use Data::Hopen;
 use strict;
