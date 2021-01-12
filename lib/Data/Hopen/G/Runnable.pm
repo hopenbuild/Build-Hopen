@@ -108,7 +108,8 @@ sub run {
     # Link the outer scope to our scope
     my $saver = $args{nocontext} ? undef : $self->scope->outerize($context_scope);
 
-    hlog { '->', ref($self), $self->name, 'input', Dumper($self->scope->as_hashref) } 3;
+    hlog { '->', ref($self), $self->name, 'input',
+        Dumper($self->scope->as_hashref(-levels => 'local')) } 3;
 
     my $retval = $self->_run(fwdopts(%args, [qw(visitor graph)]));
     $retval = {} unless defined $retval;    # a convenience

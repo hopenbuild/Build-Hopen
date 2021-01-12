@@ -161,7 +161,8 @@ that number is at least 2,000,000,000, so you're probably OK :) .
 =item *
 
 If numeric and non-negative, go up that many more levels
-(i.e., C<$levels==0> means only return this scope's local names).
+(i.e., C<$levels==0> means only return this scope's names, not names in
+any outer scope).
 
 =item *
 
@@ -294,8 +295,10 @@ TODO support a C<$set> parameter
 
 sub as_hashref {
     my ($self, %args) = getparameters('self', [qw(; levels deep)], @_);
+    $args{levels} //= undef;    # make sure it exists since fwdopts
+    $args{deep} //= false;      # doesn't forward nonexistent args
     my $hrRetval = {};
-    $self->_fill_hashref($hrRetval, $args{deep}, $args{levels});
+    $self->_fill_hashref($hrRetval, fwdopts(%args, [qw(deep levels)]));
     return $hrRetval;
 } #as_hashref()
 
