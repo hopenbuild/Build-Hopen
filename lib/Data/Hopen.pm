@@ -6,6 +6,7 @@ package Data::Hopen;
 use strict;
 use Data::Hopen::Base;
 
+# Exports {{{1
 use parent 'Exporter';
 
 # TODO move more of these to a separate utility package?
@@ -21,6 +22,23 @@ use vars::i '%EXPORT_TAGS' => {
     v => [qw(*VERBOSE *QUIET)],
     all => [@EXPORT, @EXPORT_OK],
 };
+
+# Set up the log-level names for export
+use vars::i '@hlog_level_names' => [qw(NONE info debug log trace peek)];
+
+use vars::i '$LOG_LEVEL_CONSTANT_NAMES' => {
+    map { 'L' . uc($hlog_level_names[$_]) => $_ } 1..$#hlog_level_names
+};
+
+use constant $LOG_LEVEL_CONSTANT_NAMES;
+BEGIN {
+    my @syms = keys %$LOG_LEVEL_CONSTANT_NAMES;
+    push @EXPORT_OK, @syms;
+    push @{$EXPORT_TAGS{all}}, @syms;
+    $EXPORT_TAGS{log} = [@syms];
+}
+
+# }}}1
 
 use Data::Hopen::Util::NameSet;
 use Getargs::Mixed;
@@ -91,7 +109,9 @@ keep them to five characters or less each.
 use vars::i {
     '$VERBOSE' => 0+ ($ENV{HOPEN_VERBOSITY} // '0'),
     '$QUIET' => false,
-    '@hlog_level_names' => [qw(NONE info debug log trace peek)],
+};
+
+BEGIN {
 };
 
 =head1 FUNCTIONS
@@ -174,7 +194,7 @@ However, if the block returns at least one element, hlog will produce at
 least a C<'# '>.
 
 The message will be output only if L</$VERBOSE> is at least the given minimum
-verbosity level (1 by default).
+verbosity level (or 1 if no level is given to C<hlog>).
 
 If C<< $VERBOSE > 2 >>, the filename and line from which hlog was called
 will also be printed.
@@ -254,6 +274,12 @@ sub explainvar :prototype(_) {
 }
 
 =head1 CONSTANTS
+
+=head2 Log levels
+
+The log levels are exported as L<constant>s C<LFOO> for each log level C<FOO>.
+The current log levels are, starting from C<LINFO> (level 1), C<LDEBUG>,
+C<LLOG>, C<LTRACE>, and C<LPEEK> (level 5).
 
 =head2 UNSPECIFIED
 
