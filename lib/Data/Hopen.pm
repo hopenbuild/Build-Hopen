@@ -295,9 +295,15 @@ my own frustrations working with CMake.
 
 =back
 
+=head1 AUTHORS
+
+Christopher White
+
+Mohammed S Anwar
+
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (C) 2018--2019 Christopher White, C<< <cxwembedded at gmail.com> >>
+Copyright (C) 2018--2024 Christopher White, C<< <cxwembedded at gmail.com> >>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
