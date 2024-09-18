@@ -161,7 +161,6 @@ my %opts = (
         #   - string "eval" handles $@ correctly (see perldoc -f eval)
         #   - nondestructive replace (s///r) (5.014)
         #   - backtracking control verbs (5.010)
-        #   - working smartmatch (5.010001)
         #   - stringifying regexes with modifiers (5.014)
 
     # In the following, if a specific version is listed, but no explanation
