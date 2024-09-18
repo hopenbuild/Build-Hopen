@@ -1,6 +1,7 @@
 Revision history for Data-Hopen
 
-0.000020    2024-??-??
+{{$NEXT}}
+
     - Remove smartmatch-operator support, since smartmatch is being
       removed from Perl.
 
