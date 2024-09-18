@@ -1,5 +1,9 @@
 Revision history for Data-Hopen
 
+0.000020    2024-??-??
+    - Remove smartmatch-operator support, since smartmatch is being
+      removed from Perl.
+
 0.000019    2020-12-26
     - No longer treat -phase specially when running DAGs.
 

@@ -1,6 +1,6 @@
 # Data::Hopen - A dataflow library with first-class edges
 
-[![Appveyor Status](https://img.shields.io/appveyor/ci/cxw42/data-hopen.svg?logo=appveyor)](https://ci.appveyor.com/project/cxw42/data-hopen) [![Travis Status](https://img.shields.io/travis/hopenbuild/Data-Hopen.svg?logo=travis)](https://travis-ci.org/hopenbuild/Data-Hopen) 
+[![Appveyor Status](https://img.shields.io/appveyor/ci/cxw42/data-hopen.svg?logo=appveyor)](https://ci.appveyor.com/project/cxs42/data-hopen)
 
 
 

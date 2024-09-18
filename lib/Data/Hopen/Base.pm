@@ -55,12 +55,6 @@ sub import {
     # Re-export packages
     Data::Dumper->import::into($target);
     Carp->import::into($target, qw(carp croak confess));
-
-    # Permit smartmatch.
-    # http://blogs.perl.org/users/mike_b/2013/06/a-little-nicer-way-to-use-smartmatch-on-perl-518.html
-    # (Also, https://www.perlmonks.org/?node_id=1163370 is another approach.)
-    experimental->import::into($target, 'smartmatch');
-
 } #import()
 
 1;
