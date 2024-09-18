@@ -36,9 +36,6 @@
       },
       "configure" : {
          "requires" : {
-            "Config" : "0",
-            "ExtUtils::MakeMaker" : "0",
-            "File::Spec" : "0",
             "Module::Build::Tiny" : "0.035"
          }
       },
@@ -90,12 +87,8 @@
       "test" : {
          "requires" : {
             "Capture::Tiny" : "0",
-            "Carp" : "0",
-            "Exporter" : "0",
-            "Import::Into" : "0",
             "List::AutoNumbered" : "0.000009",
             "Quote::Code" : "1.0102",
-            "Scalar::Util" : "0",
             "Sub::Identify" : "0.14",
             "Test::Deep" : "0.098",
             "Test::Fatal" : "0.014",
