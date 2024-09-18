@@ -15,14 +15,14 @@ image:
 
 build_script:
   - cpanm --installdeps --notest --verbose .
-  - perl Makefile.PL
-  - cmd: gmake
-  - sh: make
+  - perl Build.PL
+  - cmd: perl Build
+  - sh: ./Build
 
 test_script:
 #  - echo Use just this line to succeed and save the cache.
-  - cmd: gmake test
-  - sh: make test
+  - cmd: perl Build test
+  - sh: ./Build test
 
 # * Thanks to https://stackoverflow.com/a/21041546/2877364
 #   by https://stackoverflow.com/users/2964427/09stephenb and
