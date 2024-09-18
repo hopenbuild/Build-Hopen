@@ -1,4 +1,4 @@
-# Auto-generated from Makefile.PL by cpanfile-from-Makefile-PL
+# cpanfile for Data-Hopen
 requires 'Carp';
 requires 'Class::Method::Modifiers', '2.10';
 requires 'Class::Tiny', '1.001';
@@ -27,9 +27,7 @@ requires 'vars::i', '2.000000';
 requires 'warnings';
 
 on configure => sub {
-    requires 'Config';
-    requires 'ExtUtils::MakeMaker';
-    requires 'File::Spec';
+    requires 'Module::Build::Tiny';
 };
 
 on build => sub {
@@ -41,12 +39,8 @@ on build => sub {
 
 on test => sub {
     requires 'Capture::Tiny';
-    requires 'Carp';
-    requires 'Exporter';
-    requires 'Import::Into';
     requires 'List::AutoNumbered', '0.000009';
     requires 'Quote::Code', '1.0102';
-    requires 'Scalar::Util';
     requires 'Sub::Identify', '0.14';
     requires 'Test::Deep', '0.098';
     requires 'Test::Fatal', '0.014';
