@@ -5,6 +5,7 @@ Revision history for Data-Hopen
     - Remove smartmatch-operator support, since smartmatch is being
       removed from Perl.
     - Manage this dist using Minilla
+    - Change the license to BSD-3-Clause (#9)
 
 0.000019    2020-12-26
     - No longer treat -phase specially when running DAGs.

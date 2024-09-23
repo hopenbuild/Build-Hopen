@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BSD-3-Clause
 name = "Data-Hopen"
 badges = ["appveyor"]
 authority="cpan:CXW"
@@ -5,6 +6,4 @@ authority="cpan:CXW"
 module_maker="ModuleBuildTiny"
 static_install = "auto"
 tag_format = "v%v"
-license = "lgpl_2_1"
-
-
+license = "bsd"
