@@ -3,8 +3,8 @@ Revision history for Data-Hopen
 {{$NEXT}}
 
     - Remove smartmatch-operator support, since smartmatch is being
-      removed from Perl.
-    - Manage this dist using Minilla
+      removed from Perl (#6) (andk++)
+    - Manage this dist using Minilla (#8)
     - Change the license to BSD-3-Clause (#9)
 
 0.000019    2020-12-26
