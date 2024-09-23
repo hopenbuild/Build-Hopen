@@ -2,7 +2,7 @@
 # Thanks to David Farrell,
 # https://www.perl.com/article/how-to-build-a-base-module/
 # Copyright (c) 2018 Christopher White.  All rights reserved.
-# LGPL 2.1+ - see the accompanying LICENSE file
+# SPDX-License-Identifier: BSD-3-Clause
 
 package Data::Hopen::Base;
 use parent 'Exporter';
