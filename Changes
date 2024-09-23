@@ -2,6 +2,8 @@ Revision history for Data-Hopen
 
 {{$NEXT}}
 
+0.000020 2024-09-23T18:33:38Z (TRIAL RELEASE)
+
     - Remove smartmatch-operator support, since smartmatch is being
       removed from Perl (#6) (andk++)
     - Manage this dist using Minilla (#8)
