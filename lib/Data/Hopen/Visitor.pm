@@ -3,7 +3,7 @@ package Data::Hopen::Visitor;
 use strict;
 use Data::Hopen::Base;
 
-our $VERSION = '0.000020';
+our $VERSION = '0.000021';
 
 use Class::Tiny;
 

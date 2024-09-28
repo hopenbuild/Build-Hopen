@@ -111,7 +111,7 @@
          "web" : "https://github.com/hopenbuild/Data-Hopen"
       }
    },
-   "version" : "0.000020",
+   "version" : "0.000021",
    "x_authority" : "cpan:CXW",
    "x_contributors" : [
       "Christopher White <cxw@cpan.org>",

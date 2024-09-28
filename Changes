@@ -2,6 +2,10 @@ Revision history for Data-Hopen
 
 {{$NEXT}}
 
+0.000021 2024-09-28T14:26:19Z
+
+    - Non-TRIAL release --- all tests pass on Perl 5.41.5
+
 0.000020 2024-09-23T18:33:38Z (TRIAL RELEASE)
 
     - Remove smartmatch-operator support, since smartmatch is being
